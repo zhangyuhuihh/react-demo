@@ -129,6 +129,8 @@
     ]
   },
   "devDependencies": {
+    "antd": "^3.17.0",
+    "babel-plugin-import": "^1.11.0",
     "node-sass": "^4.12.0"
   }
 }
