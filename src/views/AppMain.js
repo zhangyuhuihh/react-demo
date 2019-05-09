@@ -1,7 +1,7 @@
 import React from 'react'
-import { Route } from 'react-router-dom'
-import Test from './test'
-import Testt from './testt'
+import { Route, Switch } from 'react-router-dom'
+import Test from './test/test'
+import Testt from './test/testt'
 
 export default class AppMain extends React.Component {
   constructor(props, context) {
@@ -11,8 +11,10 @@ export default class AppMain extends React.Component {
   render() {
     return (
       <div>
-        <Route path="/Test" component={Test} />
-        <Route path="/Testt" component={Testt} />
+        <Switch>
+          <Route exact path="/test" component={Test} />
+          <Route path="/Testt" component={Testt} />
+        </Switch>
       </div>
     )
   }
