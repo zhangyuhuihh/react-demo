@@ -109,12 +109,12 @@ class LeftPart extends React.Component {
   renderMenuItem(item) {
     return item.map(v => {
       return (
-        <Menu.Item
-          onClick={() => {
-            this.handleJump(v.route)
-          }}
-          key={v.key}
-        >
+        // 这里及是阮一峰的书里所说，通常类的方法内部的this指向的是类的实例
+        // 但是onclick绑定方法之后，相当于书里的“将此方法单独拿出来”（绑定到外部）
+        // 所以在运行时，this的指向会像书里说的那样报错，所以必须在这里绑定this
+        // 通常如果没有绑定在事件上时，this就是上面的指向类的实例，这时候是可以拿到
+        // 这里绑定的handleJump的方法的,this.handleJump是可以的
+        <Menu.Item onClick={this.handleJump.bind(this, v.route)} key={v.key}>
           {v.name}
         </Menu.Item>
       )

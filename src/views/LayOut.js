@@ -1,7 +1,9 @@
 import React from 'react'
 import { BrowserRouter as Router } from 'react-router-dom'
 import LeftPart from './LeftPart'
+import LayOutCss from '@/assets/styles/LayOut.module.scss'
 import AppMain from './AppMain'
+import TopPart from './topPart'
 
 class LayOut extends React.Component {
   constructor(props, context) {
@@ -11,11 +13,14 @@ class LayOut extends React.Component {
   render() {
     return (
       <Router>
-        <div style={{ display: 'flex' }}>
-          <div className="left-Part" style={{ flex: 1 }}>
+        <div>
+          <div className={LayOutCss.topPart}>
+            <TopPart></TopPart>
+          </div>
+          <div className={LayOutCss.leftPart}>
             <LeftPart />
           </div>
-          <div style={{ flex: 1 }}>
+          <div className={LayOutCss.rightPart}>
             <AppMain />
           </div>
         </div>

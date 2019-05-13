@@ -1,0 +1,28 @@
+.topPart {
+  height: 50px;
+  width: 100%;
+  position: relative;
+  background-color: #1890ff
+}
+
+.leftPart {
+  position: absolute;
+  width: 14%;
+  left: 0;
+  top: 50px;
+  bottom: 0px;
+  background-color: #000c17;
+  overflow: hidden;
+}
+
+.rightPart {
+  position: absolute;
+  left: 14%;
+  right: 0;
+  top: 50px;
+  bottom: 0;
+  overflow: hidden;
+  margin: 20px;
+  background-color: #e6e6e6;
+  border-radius: 5px
+}
