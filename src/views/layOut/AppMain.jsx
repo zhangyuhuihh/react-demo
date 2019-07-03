@@ -1,7 +1,7 @@
 import React from 'react'
 import { Route, Switch, Redirect } from 'react-router-dom'
-import Test from './test/test'
-import Testt from './test/testt'
+import Test from '../test/test'
+import Testt from '../test/testt'
 
 export default class AppMain extends React.Component {
   constructor(props, context) {

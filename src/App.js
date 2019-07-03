@@ -1,5 +1,5 @@
 import React from 'react'
-import LayOut from './views/LayOut'
+import LayOut from './views/layOut/LayOut'
 import './App.css'
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom'
 import singlePage from '@/views/test/singlePage'
