@@ -1,21 +1,13 @@
 import React from 'react'
 import { Layout, Menu, Icon } from 'antd'
-import { Route, Switch, Redirect } from 'react-router-dom'
-import Test from '../test/test'
-import Testt from '../test/testt'
+import MyRouter from '@/route'
 
 const { Header, Sider, Content } = Layout
 const { SubMenu } = Menu
 
-export default class myLayOut extends React.Component {
+export default class MyLayOut extends React.Component {
   state = {
     collapsed: false
-  }
-
-  toggle = () => {
-    this.setState({
-      collapsed: !this.state.collapsed
-    })
   }
 
   render() {
@@ -90,14 +82,16 @@ export default class myLayOut extends React.Component {
               minHeight: 280
             }}
           >
-            <Switch>
-              <Redirect exact from="/" to="/test" />
-              <Route path="/test" component={Test} />
-              <Route path="/Testt" component={Testt} />
-            </Switch>
+            <MyRouter />
           </Content>
         </Layout>
       </Layout>
     )
+  }
+
+  toggle = () => {
+    this.setState({
+      collapsed: !this.state.collapsed
+    })
   }
 }
