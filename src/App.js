@@ -3,6 +3,7 @@ import MyLayOut from './views/layOut/LayOut'
 import './App.css'
 import './assets/styles/andtEdit/part_andt_edit.scss'
 // 这里的scss文件不能再css文件里面引入，必须在scss或者js文件里面引入
+
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom'
 import singlePage from '@/views/test/singlePage'
 function App() {

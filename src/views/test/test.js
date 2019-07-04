@@ -1,8 +1,9 @@
 import React from 'react'
-// import Testt from './testt'
 import moduleCss from './testScss.module.scss'
 import { Button } from 'antd'
-export default class Test extends React.Component {
+import { connect } from 'react-redux'
+
+class Test extends React.Component {
   constructor(props) {
     super(props)
     this.myRefs = React.createRef()
@@ -17,15 +18,22 @@ export default class Test extends React.Component {
   }
 
   render() {
+    const { count, onIncClick } = this.props
     return (
       <div className={moduleCss.container}>
-        哈哈
-        {/* <h1 className={moduleCss.title}>这里是测试页面</h1> */}
-        {/* <Testt></Testt>
-         */}
-        <Button ref={this.myRefs2.bind(this)} type="primary">Button</Button>
-        <Button ref={this.myRefs} type="primary">Button</Button>
-        <Button onClick={this.handleJumpSingle.bind(this)}>跳转到单独的页面</Button>
+        {count}
+        <button type="button" onClick={onIncClick}>
+          Increase
+        </button>
+        <Button ref={this.myRefs2.bind(this)} type="primary">
+          Button
+        </Button>
+        <Button ref={this.myRefs} type="primary">
+          Button
+        </Button>
+        <Button onClick={this.handleJumpSingle.bind(this)}>
+          跳转到单独的页面
+        </Button>
         {/* <div ref={this.myRefs2.bind(this)}>第二个dom</div> */}
       </div>
     )
@@ -39,3 +47,35 @@ export default class Test extends React.Component {
     this.props.history.push('/singlePage')
   }
 }
+
+// const Counter = ({ count, onIncClick }) => {
+//   return (
+//     <div>
+//       <span>{count}</span>
+//       <br />
+//       <button type="button" onClick={onIncClick}>
+//         Increase
+//       </button>
+//     </div>
+//   )
+// }
+
+const mapStateToProps = (state, ownProps) => {
+  console.log('mapStateToProps called')
+  return {
+    count: state.count
+  }
+}
+
+const mapDispatchToProps = {
+  onIncClick: () => {
+    return {
+      type: 'TEST_REDUX'
+    }
+  }
+}
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(Test)
