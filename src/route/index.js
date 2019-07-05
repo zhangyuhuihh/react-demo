@@ -7,7 +7,7 @@ import Testt from '@/views/test/testt'
 
 class MyRouter extends React.Component {
   state = {
-    // authArr: ['测试', '测试2'], // todo,放入redux进行权限判断
+    // authArr: ['测试', '测试2'], // 放入redux进行权限判断
     routeList: [
       {
         path: '/test',
@@ -23,7 +23,6 @@ class MyRouter extends React.Component {
   }
 
   render() {
-    console.log(this.props.authArr)
     return (
       <Switch>
         <Redirect exact from="/" to="/test" />
