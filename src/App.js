@@ -6,15 +6,36 @@ import './assets/styles/andtEdit/part_andt_edit.scss'
 
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom'
 import singlePage from '@/views/test/singlePage'
-function App() {
-  return (
-    <Router>
-      <Switch>
-        <Route path="/singlePage" component={singlePage} />
-        <Route path="/" component={MyLayOut} />
-      </Switch>
-    </Router>
-  )
+
+import { connect } from 'react-redux'
+import { setAuthArr } from './store/action'
+
+class App extends React.Component {
+  componentDidMount() {
+    const { setAuthArr } = this.props
+    const arr = ['测试', '测试2']
+    setTimeout(() => {
+      setAuthArr(arr)
+    }, 100)
+  }
+
+  render() {
+    return (
+      <Router>
+        <Switch>
+          <Route path="/singlePage" component={singlePage} />
+          <Route path="/" component={MyLayOut} />
+        </Switch>
+      </Router>
+    )
+  }
 }
-// exact 只有完全匹配才会渲染对应的组件 你可以看下路由匹配规则 或者把exact干掉 顺序由复杂到简单排列
-export default App
+
+const mapDispatchToProps = {
+  setAuthArr
+}
+
+export default connect(
+  null,
+  mapDispatchToProps
+)(App)

@@ -1,11 +1,13 @@
 import React from 'react'
 import { Route, Switch, Redirect } from 'react-router-dom'
+
+import { connect } from 'react-redux'
 import Test from '@/views/test/test'
 import Testt from '@/views/test/testt'
 
-export default class MyRouter extends React.Component {
+class MyRouter extends React.Component {
   state = {
-    authArr: ['测试', '测试2'], // todo,放入redux进行权限判断
+    // authArr: ['测试', '测试2'], // todo,放入redux进行权限判断
     routeList: [
       {
         path: '/test',
@@ -21,6 +23,7 @@ export default class MyRouter extends React.Component {
   }
 
   render() {
+    console.log(this.props.authArr)
     return (
       <Switch>
         <Redirect exact from="/" to="/test" />
@@ -38,6 +41,16 @@ export default class MyRouter extends React.Component {
   }
 
   hasPermission(v) {
-    return this.state.authArr.includes(v.role)
+    return this.props.authArr.includes(v.role)
   }
 }
+
+const mapStateToProps = state => {
+  // 1.尽量不要添加ownProps
+  return {
+    authArr: state.authArr
+  }
+}
+
+
+export default connect(mapStateToProps, null)(MyRouter)

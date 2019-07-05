@@ -3,17 +3,17 @@
  */
 import { combineReducers } from 'redux'
 
-const countReducer = (count = 0, action) => {
+const authReducer = (authArr = [], action) => {
   switch (action.type) {
-    case 'TEST_REDUX':
-      return count + 1
+    case 'SET_AUTHARR':
+      return action.authArr
     default:
-      return count
+      return []
   }
 }
 
 const allReducers = combineReducers({
-  count: countReducer
-}) 
+  authArr: authReducer
+})
 
 export default allReducers
