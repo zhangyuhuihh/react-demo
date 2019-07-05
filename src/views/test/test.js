@@ -48,27 +48,18 @@ class Test extends React.Component {
   }
 }
 
-// const Counter = ({ count, onIncClick }) => {
-//   return (
-//     <div>
-//       <span>{count}</span>
-//       <br />
-//       <button type="button" onClick={onIncClick}>
-//         Increase
-//       </button>
-//     </div>
-//   )
-// }
-
 const mapStateToProps = (state, ownProps) => {
   console.log('mapStateToProps called')
+  // 1.尽量不要添加ownProps
   return {
     count: state.count
   }
 }
 
+// 我们建议使用对象形式的mapDispatchToProps，除非你需要以某种自定义形式进行分发操作
+// bindActionCreators
 const mapDispatchToProps = {
-  onIncClick: () => {
+  onIncClick() {
     return {
       type: 'TEST_REDUX'
     }

@@ -1,18 +1,19 @@
 /**
  * Created by 叶子 on 2017/7/30.
  */
-// import { combineReducers } from 'redux'
+import { combineReducers } from 'redux'
 
-const changeValue = (state = { count: 1}, action) => {
+const countReducer = (count = 0, action) => {
   switch (action.type) {
     case 'TEST_REDUX':
-      return {
-        ...state,
-        count: state.count + 1
-      }
+      return count + 1
     default:
-      return { ...state }
+      return count
   }
 }
 
-export default changeValue
+const allReducers = combineReducers({
+  count: countReducer
+}) 
+
+export default allReducers
