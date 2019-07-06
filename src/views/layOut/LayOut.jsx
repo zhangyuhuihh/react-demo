@@ -7,50 +7,25 @@ import { connect } from 'react-redux'
 const { Header, Sider, Content } = Layout
 const { SubMenu } = Menu
 
-function iterateMenu(menuList) {
-  let target = []
-  for (let i in menuList) {
-    if (menuList[i].hasOwnProperty('children')) {
-      target[i] = (
-        <SubMenu
-          key={menuList[i].name}
-          title={
-            <span>
-              <Icon type="mail" />
-              <span>{menuList[i].name}</span>
-            </span>
-          }
-        >
-          {iterateMenu(menuList[i].children)}
-        </SubMenu>
-      )
-    } else {
-      target[i] = (
-        <Menu.Item key={menuList[i].path}>
-          <Link to={menuList[i].path}>{menuList[i].name}</Link>
-        </Menu.Item>
-      )
-    }
-  }
-  return target
-}
-
 class MyLayOut extends React.Component {
   state = {
     collapsed: false,
     menuList: [
       {
         name: '测试',
+        role: '测试',
         children: [
           {
             name: '子页面1',
-            path: '/test'
+            path: '/test',
+            role: '测试'
           }
         ]
       },
       {
-        name: '测试3',
-        path: '/Testt'
+        name: '测试2',
+        path: '/Testt',
+        role: '测试2'
       }
     ]
   }
@@ -67,7 +42,7 @@ class MyLayOut extends React.Component {
             theme="dark"
             inlineCollapsed={this.state.collapsed}
           >
-            {iterateMenu(this.state.menuList)}
+            {this.iterateMenu(this.state.menuList)}
           </Menu>
         </Sider>
         <Layout>
@@ -94,7 +69,41 @@ class MyLayOut extends React.Component {
   }
 
   renderMenu() {
-    return iterateMenu(this.state.menuList)
+    return this.iterateMenu(this.state.menuList)
+  }
+
+  iterateMenu(menuList) {
+    let target = []
+    for (let i in menuList) {
+      if (this.hasPermission(menuList[i])) {
+        if (menuList[i].hasOwnProperty('children')) {
+          target[i] = (
+            <SubMenu
+              key={menuList[i].name}
+              title={
+                <span>
+                  <Icon type="mail" />
+                  <span>{menuList[i].name}</span>
+                </span>
+              }
+            >
+              {this.iterateMenu(menuList[i].children)}
+            </SubMenu>
+          )
+        } else {
+          target[i] = (
+            <Menu.Item key={menuList[i].path}>
+              <Link to={menuList[i].path}>{menuList[i].name}</Link>
+            </Menu.Item>
+          )
+        }
+      }
+    }
+    return target
+  }
+
+  hasPermission(v) {
+    return this.props.authArr.includes(v.role)
   }
 
   // https://www.jianshu.com/p/77e48c129c16
