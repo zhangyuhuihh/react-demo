@@ -21,7 +21,7 @@ class App extends React.Component {
 
   render() {
     return (
-      <Router>
+      <Router basename="/react_test">
         <Switch>
           <Route path="/singlePage" component={singlePage} />
           <Route path="/" component={MyLayOut} />
