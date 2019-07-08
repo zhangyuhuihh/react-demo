@@ -1,9 +1,10 @@
-import React from 'react'
+import React, { Suspense, lazy } from 'react'
 import { Route, Switch, Redirect } from 'react-router-dom'
 
 import { connect } from 'react-redux'
 import Test from '@/views/test/test'
-import Testt from '@/views/test/testt'
+
+const Testt = lazy(() => import('../views/test/testt'))
 
 class MyRouter extends React.Component {
   state = {
@@ -26,15 +27,17 @@ class MyRouter extends React.Component {
     return (
       <Switch>
         <Redirect exact from="/" to="/test" />
-        {this.state.routeList
-          .filter(v => {
-            return this.hasPermission(v)
-          })
-          .map(v => {
-            return (
-              <Route path={v.path} component={v.component} key={v.path} />
-            )
-          })}
+        <Suspense fallback={<div>Loading...</div>}>
+          {this.state.routeList
+            .filter(v => {
+              return this.hasPermission(v)
+            })
+            .map(v => {
+              return (
+                <Route path={v.path} component={v.component} key={v.path} />
+              )
+            })}
+        </Suspense>
       </Switch>
     )
   }
@@ -51,5 +54,7 @@ const mapStateToProps = state => {
   }
 }
 
-
-export default connect(mapStateToProps, null)(MyRouter)
+export default connect(
+  mapStateToProps,
+  null
+)(MyRouter)
