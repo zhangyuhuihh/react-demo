@@ -1,7 +1,16 @@
-
-.container {
-  color: red;
-  .title {
-    font-size: 59px
+.main_container {
+  .main_container_bar {
+    .bar_left {
+      float: left;
+    }
+    .bar_right {
+      float: right;
+    }
+  }
+  .main_container_table {
+    margin-top: 24px;
+    .btn_container {
+      
+    }
   }
 }

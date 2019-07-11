@@ -1,72 +1,139 @@
 import React from 'react'
 import moduleCss from './testScss.module.scss'
-import { Button } from 'antd'
-import { connect } from 'react-redux'
+import { Table, Button } from 'antd'
+
+import SearchBar from './SearchBar'
+
+// const { Columns } = Table
 
 class Test extends React.Component {
-  constructor(props) {
-    super(props)
-    this.myRefs = React.createRef()
-    // this.myRefs2 = React.createRef()
-    this.btn = null
+  state = {
+    listData: [
+      {
+        key: '1',
+        firstName: 'John',
+        lastName: 'Brown',
+        age: 32
+      },
+      {
+        key: '2',
+        firstName: 'Jim',
+        lastName: 'Green',
+        age: 42
+      },
+      {
+        key: '3',
+        firstName: 'Joe',
+        lastName: 'Black',
+        age: 32
+      }
+    ]
   }
 
-  componentDidMount() {
-    console.log(this.myRefs.current)
-    // console.log(this.myRefs2.current)
-    console.log(this.btn)
+  columns = [
+    {
+      dataIndex: 'firstName',
+      title: '使用地理位置编号'
+    },
+    {
+      dataIndex: 'lastName',
+      title: '使用地理位置名称'
+    },
+    {
+      dataIndex: 'age',
+      title: '发布人'
+    },
+    {
+      dataIndex: 'address',
+      title: '发布时间'
+    },
+    {
+      dataIndex: 'action',
+      title: '操作',
+      render: (text, record) => {
+        return (
+          <div className={moduleCss.btn_container}>
+            <Button onClick={this.checkDetail} type="primary" size={'small'}>
+              查看
+            </Button>
+            <Button
+              style={{ marginLeft: '10px' }}
+              onClick={this.handleEdit}
+              type="primary"
+              size={'small'}
+            >
+              编辑
+            </Button>
+            <Button
+              style={{ marginLeft: '10px' }}
+              onClick={this.handleDelete}
+              type="primary"
+              size={'small'}
+            >
+              删除
+            </Button>
+          </div>
+        )
+      }
+    }
+  ]
+
+  rowSelection = {
+    onChange: (selectedRowKeys, selectedRows) => {
+      console.log(
+        `selectedRowKeys: ${selectedRowKeys}`,
+        'selectedRows: ',
+        selectedRows
+      )
+    },
+    getCheckboxProps: record => ({
+      disabled: record.name === 'Disabled User',
+      name: record.name
+    })
   }
 
-  render() {
-    const { count, onIncClick } = this.props
+  checkDetail = () => {}
+
+  handleEdit = () => {}
+
+  handleDelete = () => {}
+
+  renderBar() {
     return (
-      <div className={moduleCss.container}>
-        {count}
-        <button type="button" onClick={onIncClick}>
-          Increase
-        </button>
-        <Button ref={this.myRefs2.bind(this)} type="primary">
-          Button
-        </Button>
-        <Button ref={this.myRefs} type="primary">
-          Button
-        </Button>
-        <Button onClick={this.handleJumpSingle.bind(this)}>
-          跳转到单独的页面
-        </Button>
-        {/* <div ref={this.myRefs2.bind(this)}>第二个dom</div> */}
+      <div style={{ overflow: 'hidden' }}>
+        <div className={moduleCss.bar_left}>
+          <Button onClick={this.handleEdit} type="primary">
+            新增
+          </Button>
+        </div>
+        <div className={moduleCss.bar_right}>
+          <SearchBar />
+        </div>
       </div>
     )
   }
 
-  myRefs2(element) {
-    this.btn = element
+  renderTable() {
+    const { listData } = this.state
+    return (
+      <Table
+        rowSelection={this.rowSelection}
+        columns={this.columns}
+        dataSource={listData}
+      />
+    )
   }
 
-  handleJumpSingle() {
-    this.props.history.push('/singlePage')
-  }
-}
-
-const mapStateToProps = (state, ownProps) => {
-  console.log('mapStateToProps called')
-  // 1.尽量不要添加ownProps
-  return {
-    count: state.count
-  }
-}
-
-// 我们建议使用对象形式的mapDispatchToProps，除非你需要以某种自定义形式进行分发操作
-// bindActionCreators
-const mapDispatchToProps = {
-  onIncClick() {
-    return {
-      type: 'TEST_REDUX'
-    }
+  render() {
+    return (
+      <div className={moduleCss.main_container}>
+        <div className={moduleCss.main_container_bar}>{this.renderBar()}</div>
+        <div className={moduleCss.main_container_table}>
+          {this.renderTable()}
+        </div>
+      </div>
+    )
   }
 }
 
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(Test)
+export default Test
