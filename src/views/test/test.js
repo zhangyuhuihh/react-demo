@@ -1,6 +1,6 @@
 import React from 'react'
 import moduleCss from './testScss.module.scss'
-import { Table, Button } from 'antd'
+import { Table, Button, Modal } from 'antd'
 
 import SearchBar from './SearchBar'
 
@@ -8,6 +8,7 @@ import SearchBar from './SearchBar'
 
 class Test extends React.Component {
   state = {
+    detailVisible: false,
     listData: [
       {
         key: '1',
@@ -92,7 +93,11 @@ class Test extends React.Component {
     })
   }
 
-  checkDetail = () => {}
+  checkDetail = () => {
+    this.setState({
+      detailVisible: true
+    })
+  }
 
   handleEdit = () => {}
 
@@ -124,6 +129,25 @@ class Test extends React.Component {
     )
   }
 
+  renderDetailModel() {
+    return (
+      <Modal
+        title="详情"
+        visible={this.state.detailVisible}
+        onOk={() => {
+          this.detailVisible = false
+        }}
+        onCancel={this.handleCancel}
+        okText="确认"
+        cancelText="取消"
+      >
+        <p>Some contents...</p>
+        <p>Some contents...</p>
+        <p>Some contents...</p>
+      </Modal>
+    )
+  }
+
   render() {
     return (
       <div className={moduleCss.main_container}>
@@ -131,6 +155,7 @@ class Test extends React.Component {
         <div className={moduleCss.main_container_table}>
           {this.renderTable()}
         </div>
+        {this.renderDetailModel()}
       </div>
     )
   }
