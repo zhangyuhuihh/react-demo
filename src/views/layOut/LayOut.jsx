@@ -7,6 +7,7 @@ import { connect } from 'react-redux'
 const { Header, Sider, Content } = Layout
 const { SubMenu } = Menu
 
+// @connect(mapStateToProps, mapDispatchToProps) es6:Decorator
 class MyLayOut extends React.Component {
   state = {
     collapsed: false,
