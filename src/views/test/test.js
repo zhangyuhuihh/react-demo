@@ -1,6 +1,6 @@
 import React from 'react'
 import moduleCss from './testScss.module.scss'
-import { Table, Button, Modal } from 'antd'
+import { Table, Button, Modal, Form, Input } from 'antd'
 
 import SearchBar from './SearchBar'
 
@@ -52,6 +52,7 @@ class Test extends React.Component {
         }
       ]
     }
+    // this.formRef = null
 
     this.columns = [
       {
@@ -182,6 +183,17 @@ class Test extends React.Component {
     })
   }
 
+  handleConfirmAddOrEdit = () => {
+    this.formRef.props.form.validateFields((errors, values) => {
+      if (errors) {
+        return
+      }
+    })
+    // this.setState({
+    //   addOrEditVisible: false
+    // })
+  }
+
   handleCancelAddEditModel = () => {
     this.setState({
       addOrEditVisible: false
@@ -215,19 +227,17 @@ class Test extends React.Component {
     )
   }
 
-  renderAddOrEditModel() {
+  renderAddOrEditModel = () => {
     return (
       <Modal
         title={this.state.modalTitle}
         visible={this.state.addOrEditVisible}
-        onOk={() => {
-          this.addOrEditVisible = false
-        }}
+        onOk={this.handleConfirmAddOrEdit}
         onCancel={this.handleCancelAddEditModel}
       >
-        <p>Some contents...</p>
-        <p>Some contents...</p>
-        <p>Some contents...</p>
+        <div>
+          <WrappredAddOrEditForm wrappedComponentRef={(form) => this.formRef = form} />
+        </div>
       </Modal>
     )
   }
@@ -297,5 +307,31 @@ class Test extends React.Component {
     )
   }
 }
+
+class addOrEditForm extends React.Component {
+  render() {
+    const { getFieldDecorator } = this.props.form
+    return (
+      <Form onSubmit={this.handleSubmit}>
+        <Form.Item label="E-mail">
+          {getFieldDecorator('email', {
+            rules: [
+              {
+                type: 'email',
+                message: 'The input is not valid E-mail!'
+              },
+              {
+                required: true,
+                message: 'Please input your E-mail!'
+              }
+            ]
+          })(<Input />)}
+        </Form.Item>
+      </Form>
+    )
+  }
+}
+
+const WrappredAddOrEditForm = Form.create({ name: 'addOrEdit' })(addOrEditForm)
 
 export default Test
