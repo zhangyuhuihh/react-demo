@@ -52,7 +52,10 @@ class Test extends React.Component {
         }
       ]
     }
-    // this.formRef = null
+
+    this.initFormValues = {
+      name: ''
+    }
 
     this.columns = [
       {
@@ -169,6 +172,7 @@ class Test extends React.Component {
   }
 
   handleEdit = record => {
+    this.initFormValues.name = '张三'
     this.setState({
       modalTitle: '编辑',
       addOrEditVisible: true
@@ -184,20 +188,29 @@ class Test extends React.Component {
   }
 
   handleConfirmAddOrEdit = () => {
-    this.formRef.props.form.validateFields((errors, values) => {
+    const formToValidate = this.formRef.props.form
+    formToValidate.validateFields((errors, values) => {
       if (errors) {
         return
       }
+      // const formData = formTovalidate.getFieldsValue()
+      // this.setState({
+      //   addOrEditVisible: false
+      // })
     })
-    // this.setState({
-    //   addOrEditVisible: false
-    // })
   }
 
   handleCancelAddEditModel = () => {
     this.setState({
       addOrEditVisible: false
     })
+  }
+
+  ModelClose = () => {
+   this.formRef.props.form.resetFields()
+    this.initFormValues = {
+      name: ''
+    }
   }
 
   renderBar() {
@@ -234,9 +247,13 @@ class Test extends React.Component {
         visible={this.state.addOrEditVisible}
         onOk={this.handleConfirmAddOrEdit}
         onCancel={this.handleCancelAddEditModel}
+        afterClose={this.ModelClose}
       >
         <div>
-          <WrappredAddOrEditForm wrappedComponentRef={(form) => this.formRef = form} />
+          <WrappredAddOrEditForm
+            wrappedComponentRef={form => (this.formRef = form)}
+            initValue={this.initFormValues}
+          />
         </div>
       </Modal>
     )
@@ -311,21 +328,19 @@ class Test extends React.Component {
 class addOrEditForm extends React.Component {
   render() {
     const { getFieldDecorator } = this.props.form
+    const { name } = this.props.initValue
     return (
       <Form onSubmit={this.handleSubmit}>
-        <Form.Item label="E-mail">
-          {getFieldDecorator('email', {
+        <Form.Item label="姓名">
+          {getFieldDecorator('name', {
+            initialValue: name,
             rules: [
               {
-                type: 'email',
-                message: 'The input is not valid E-mail!'
-              },
-              {
                 required: true,
-                message: 'Please input your E-mail!'
+                message: '请输入姓名'
               }
             ]
-          })(<Input />)}
+          })(<Input placeholder="请输入姓名" />)}
         </Form.Item>
       </Form>
     )
