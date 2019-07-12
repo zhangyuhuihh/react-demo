@@ -18,6 +18,8 @@ class Test extends React.Component {
       detailVisible: false,
       addOrEditVisible: false,
       modalTitle: '新增',
+      initFormValues: {},
+      detailObject: {},
 
       currentPage: 1,
       pageSize: 10,
@@ -51,10 +53,6 @@ class Test extends React.Component {
           age: 32
         }
       ]
-    }
-
-    this.initFormValues = {
-      name: ''
     }
 
     this.columns = [
@@ -160,7 +158,8 @@ class Test extends React.Component {
 
   handleCheckDetail = record => {
     this.setState({
-      detailVisible: true
+      detailVisible: true,
+      detailObject: record
     })
   }
 
@@ -172,9 +171,12 @@ class Test extends React.Component {
   }
 
   handleEdit = record => {
-    this.initFormValues.name = '张三'
+    // 编辑数据回显
     this.setState({
       modalTitle: '编辑',
+      initFormValues: {
+        name: '张三'
+      },
       addOrEditVisible: true
     })
   }
@@ -207,10 +209,12 @@ class Test extends React.Component {
   }
 
   ModelClose = () => {
-   this.formRef.props.form.resetFields()
-    this.initFormValues = {
-      name: ''
-    }
+    this.formRef.props.form.resetFields()
+    this.setState({
+      initFormValues: {
+        name: ''
+      }
+    })
   }
 
   renderBar() {
@@ -252,7 +256,7 @@ class Test extends React.Component {
         <div>
           <WrappredAddOrEditForm
             wrappedComponentRef={form => (this.formRef = form)}
-            initValue={this.initFormValues}
+            initValue={this.state.initFormValues}
           />
         </div>
       </Modal>
@@ -260,6 +264,7 @@ class Test extends React.Component {
   }
 
   renderDetailModel() {
+    const { detailObject } = this.state
     return (
       <Modal
         title="详情"
@@ -269,9 +274,9 @@ class Test extends React.Component {
         }}
         onCancel={this.handleCancelDetailModel}
       >
-        <p>Some contents...</p>
-        <p>Some contents...</p>
-        <p>Some contents...</p>
+        <div>
+          <span>{detailObject && detailObject.firstName}</span>
+        </div>
       </Modal>
     )
   }
@@ -328,12 +333,12 @@ class Test extends React.Component {
 class addOrEditForm extends React.Component {
   render() {
     const { getFieldDecorator } = this.props.form
-    const { name } = this.props.initValue
+    const { initValue } = this.props
     return (
       <Form onSubmit={this.handleSubmit}>
         <Form.Item label="姓名">
           {getFieldDecorator('name', {
-            initialValue: name,
+            initialValue: initValue.name,
             rules: [
               {
                 required: true,
