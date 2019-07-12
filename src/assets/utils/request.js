@@ -8,7 +8,7 @@ const request = (config = {}) => {
   const { url } = config
   const omitConfig = _.omit(config, ['url'])
 
-  const _baseURL = '/api'
+  const _baseURL = '/pm/web'
 
   const _config = {
     url: _baseURL + url,

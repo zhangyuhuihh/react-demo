@@ -2,6 +2,8 @@ import React from 'react'
 import ReactDOM from 'react-dom'
 import './index.css'
 import App from './App'
+import { LocaleProvider } from 'antd'
+import zh_CN from 'antd/lib/locale-provider/zh_CN'
 
 import { Provider } from 'react-redux'
 import store from './store'
@@ -9,9 +11,11 @@ import store from './store'
 import * as serviceWorker from './serviceWorker'
 
 ReactDOM.render(
-  <Provider store={store}>
-    <App />
-  </Provider>,
+  <LocaleProvider locale={zh_CN}>
+    <Provider store={store}>
+      <App />
+    </Provider>
+  </LocaleProvider>,
   document.getElementById('root')
 )
 

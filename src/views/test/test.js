@@ -4,80 +4,119 @@ import { Table, Button, Modal } from 'antd'
 
 import SearchBar from './SearchBar'
 
-// const { Columns } = Table
+import {
+  getCapitalAssertsLocalsForPage,
+  insertCapitalAssertsLocal,
+  updateCapitalAssertsLocalById
+  // deleteCapitalAssertsLocalBatch
+} from '@/assets/api/fixedAssetManagement/assetUsingLand'
 
 class Test extends React.Component {
-  state = {
-    detailVisible: false,
-    listData: [
+  constructor() {
+    super()
+    this.state = {
+      detailVisible: false,
+      addOrEditVisible: false,
+      modalTitle: '新增',
+
+      currentPage: 1,
+      pageSize: 10,
+
+      paginationOption: {
+        total: 0,
+        pageSizeOptions: ['10', '30', '50'],
+        showSizeChanger: true,
+        showQuickJumper: true,
+        size: 'small',
+        onChange: this.handleCurrentChange,
+        onShowSizeChange: this.handleSizeChange
+      },
+      listData: [
+        {
+          key: '1',
+          firstName: 'John',
+          lastName: 'Brown',
+          age: 32
+        },
+        {
+          key: '2',
+          firstName: 'Jim',
+          lastName: 'Green',
+          age: 42
+        },
+        {
+          key: '3',
+          firstName: 'Joe',
+          lastName: 'Black',
+          age: 32
+        }
+      ]
+    }
+
+    this.columns = [
       {
-        key: '1',
-        firstName: 'John',
-        lastName: 'Brown',
-        age: 32
+        dataIndex: 'firstName',
+        title: '使用地理位置编号'
       },
       {
-        key: '2',
-        firstName: 'Jim',
-        lastName: 'Green',
-        age: 42
+        dataIndex: 'lastName',
+        title: '使用地理位置名称'
       },
       {
-        key: '3',
-        firstName: 'Joe',
-        lastName: 'Black',
-        age: 32
+        dataIndex: 'age',
+        title: '发布人'
+      },
+      {
+        dataIndex: 'address',
+        title: '发布时间'
+      },
+      {
+        dataIndex: 'action',
+        title: '操作',
+        render: this.actionRender
       }
     ]
   }
 
-  columns = [
-    {
-      dataIndex: 'firstName',
-      title: '使用地理位置编号'
-    },
-    {
-      dataIndex: 'lastName',
-      title: '使用地理位置名称'
-    },
-    {
-      dataIndex: 'age',
-      title: '发布人'
-    },
-    {
-      dataIndex: 'address',
-      title: '发布时间'
-    },
-    {
-      dataIndex: 'action',
-      title: '操作',
-      render: (text, record) => {
-        return (
-          <div className={moduleCss.btn_container}>
-            <Button onClick={this.checkDetail} type="primary" size={'small'}>
-              查看
-            </Button>
-            <Button
-              style={{ marginLeft: '10px' }}
-              onClick={this.handleEdit}
-              type="primary"
-              size={'small'}
-            >
-              编辑
-            </Button>
-            <Button
-              style={{ marginLeft: '10px' }}
-              onClick={this.handleDelete}
-              type="primary"
-              size={'small'}
-            >
-              删除
-            </Button>
-          </div>
-        )
-      }
-    }
-  ]
+  componentDidMount() {
+    this.setTable()
+  }
+
+  actionRender = (text, record, index) => {
+    return (
+      <div className={moduleCss.btn_container}>
+        <Button
+          onClick={() => {
+            this.handleCheckDetail(record)
+          }}
+          type="primary"
+          size={'small'}
+        >
+          查看
+        </Button>
+        <Button
+          style={{ marginLeft: '10px' }}
+          onClick={() => {
+            this.handleEdit(record)
+          }}
+          type="primary"
+          size={'small'}
+        >
+          编辑
+        </Button>
+        <Button
+          style={{ marginLeft: '10px' }}
+          onClick={() => {
+            this.handleDelete(record)
+          }}
+          type="danger"
+          size={'small'}
+        >
+          删除
+        </Button>
+      </div>
+    )
+  }
 
   rowSelection = {
     onChange: (selectedRowKeys, selectedRows) => {
@@ -93,21 +132,67 @@ class Test extends React.Component {
     })
   }
 
-  checkDetail = () => {
+  handleSizeChange = (page, pageSize) => {
+    this.setState(
+      {
+        pageSize: pageSize
+      },
+      () => {
+        this.setTable()
+      }
+    )
+  }
+
+  handleCurrentChange = current => {
+    this.setState(
+      {
+        currentPage: current
+      },
+      () => {
+        this.setTable()
+      }
+    )
+  }
+
+  handleCheckDetail = record => {
     this.setState({
       detailVisible: true
     })
   }
 
-  handleEdit = () => {}
+  handleAdd = () => {
+    this.setState({
+      modalTitle: '新增',
+      addOrEditVisible: true
+    })
+  }
 
-  handleDelete = () => {}
+  handleEdit = record => {
+    this.setState({
+      modalTitle: '编辑',
+      addOrEditVisible: true
+    })
+  }
+
+  handleDelete = record => {}
+
+  handleCancelDetailModel = () => {
+    this.setState({
+      detailVisible: false
+    })
+  }
+
+  handleCancelAddEditModel = () => {
+    this.setState({
+      addOrEditVisible: false
+    })
+  }
 
   renderBar() {
     return (
       <div style={{ overflow: 'hidden' }}>
         <div className={moduleCss.bar_left}>
-          <Button onClick={this.handleEdit} type="primary">
+          <Button onClick={this.handleAdd} type="primary">
             新增
           </Button>
         </div>
@@ -125,7 +210,25 @@ class Test extends React.Component {
         rowSelection={this.rowSelection}
         columns={this.columns}
         dataSource={listData}
+        pagination={this.state.paginationOption}
       />
+    )
+  }
+
+  renderAddOrEditModel() {
+    return (
+      <Modal
+        title={this.state.modalTitle}
+        visible={this.state.addOrEditVisible}
+        onOk={() => {
+          this.addOrEditVisible = false
+        }}
+        onCancel={this.handleCancelAddEditModel}
+      >
+        <p>Some contents...</p>
+        <p>Some contents...</p>
+        <p>Some contents...</p>
+      </Modal>
     )
   }
 
@@ -137,9 +240,7 @@ class Test extends React.Component {
         onOk={() => {
           this.detailVisible = false
         }}
-        onCancel={this.handleCancel}
-        okText="确认"
-        cancelText="取消"
+        onCancel={this.handleCancelDetailModel}
       >
         <p>Some contents...</p>
         <p>Some contents...</p>
@@ -147,6 +248,41 @@ class Test extends React.Component {
       </Modal>
     )
   }
+
+  // 列表
+  async setTable(querParams = {}) {
+    const { data } = await getCapitalAssertsLocalsForPage(
+      { ...querParams },
+      {
+        page: this.state.currentPage,
+        pageSize: this.state.pageSize
+      }
+    )
+    const newPageOption = { ...this.state.paginationOption, total: data.total }
+    this.setState({
+      listData: data.rows,
+      paginationOption: newPageOption
+    })
+  }
+
+  // 新增
+  async addData(insertData = {}) {
+    await insertCapitalAssertsLocal({ ...insertData })
+    this.setState({
+      addOrEditVisible: false
+    })
+  }
+
+  // 编辑
+  async editData(editData = {}) {
+    await updateCapitalAssertsLocalById({ ...editData })
+    this.setState({
+      addOrEditVisible: false
+    })
+  }
+
+  // 删除
+  async deleteData() {}
 
   render() {
     return (
@@ -156,6 +292,7 @@ class Test extends React.Component {
           {this.renderTable()}
         </div>
         {this.renderDetailModel()}
+        {this.renderAddOrEditModel()}
       </div>
     )
   }

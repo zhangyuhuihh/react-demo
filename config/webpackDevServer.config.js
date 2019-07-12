@@ -81,7 +81,17 @@ module.exports = function(proxy, allowedHost) {
       disableDotRule: true,
     },
     public: allowedHost,
-    proxy,
+    proxy: {
+      '/pm/web': {
+        target: "http://192.168.200.248:10003/pm/web",
+        // target: "http://192.168.199.15:10003/pm/web",
+        changeOrigin: true,
+        cookieDomainRewrite: "localhost",
+        pathRewrite: {
+          "^/pm/web": ""
+        }
+      }
+    },
     before(app, server) {
       if (fs.existsSync(paths.proxySetup)) {
         // This registers user provided middleware for proxy reasons
