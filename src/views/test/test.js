@@ -134,6 +134,11 @@ class Test extends React.Component {
     })
   }
 
+  handleSearch(searchParams) {
+    console.log(searchParams)
+    // this.setTable() 刷新列表
+  }
+
   handleSizeChange = (page, pageSize) => {
     this.setState(
       {
@@ -226,7 +231,7 @@ class Test extends React.Component {
           </Button>
         </div>
         <div className={moduleCss.bar_right}>
-          <SearchBar />
+          <SearchBar handleSearch={this.handleSearch} />
         </div>
       </div>
     )
@@ -335,7 +340,7 @@ class addOrEditForm extends React.Component {
     const { getFieldDecorator } = this.props.form
     const { initValue } = this.props
     return (
-      <Form onSubmit={this.handleSubmit}>
+      <Form>
         <Form.Item label="姓名">
           {getFieldDecorator('name', {
             initialValue: initValue.name,

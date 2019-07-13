@@ -2,22 +2,47 @@ import React from 'react'
 
 import { Form, Input, Button } from 'antd'
 
-export default class SearchBar extends React.Component {
+class SearchBar extends React.Component {
   render() {
     return (
       <div>
-        <Form layout={'inline'}>
-          <Form.Item>
-            <Input placeholder="请输入姓名" />
-          </Form.Item>
-          <Form.Item>
-            <Input placeholder="请输入名称" />
-          </Form.Item>
-          <Form.Item>
-            <Button type="primary">搜索</Button>
-          </Form.Item>
-        </Form>
+        <WrappedSearchForm {...this.props} />
       </div>
     )
   }
 }
+
+class SearchForm extends React.Component {
+  doSearch = () => {
+    const { handleSearch } = this.props
+    const queryParams = this.props.form.getFieldsValue()
+    handleSearch(queryParams)
+  }
+
+  render() {
+    const { getFieldDecorator } = this.props.form
+    return (
+      <Form layout={'inline'}>
+        <Form.Item>
+          {getFieldDecorator('name', {
+            initalValue: ''
+          })(<Input allowClear placeholder="请输入姓名" />)}
+        </Form.Item>
+        <Form.Item>
+          {getFieldDecorator('age', {
+            initalValue: ''
+          })(<Input allowClear placeholder="请输入年龄" />)}
+        </Form.Item>
+        <Form.Item>
+          <Button type="primary" onClick={this.doSearch}>
+            搜索
+          </Button>
+        </Form.Item>
+      </Form>
+    )
+  }
+}
+
+const WrappedSearchForm = Form.create({ name: 'searchBar' })(SearchForm)
+
+export default SearchBar
