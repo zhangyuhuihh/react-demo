@@ -1,6 +1,7 @@
 import React from 'react'
 
 import { Form, Input, Button } from 'antd'
+import PropTypes from 'prop-types'
 
 class SearchBar extends React.Component {
   render() {
@@ -10,6 +11,10 @@ class SearchBar extends React.Component {
       </div>
     )
   }
+}
+
+SearchBar.propTypes = {
+  handleSearch: PropTypes.func
 }
 
 class SearchForm extends React.Component {
@@ -41,6 +46,10 @@ class SearchForm extends React.Component {
       </Form>
     )
   }
+}
+
+SearchForm.propTypes = {
+  handleSearch: PropTypes.func
 }
 
 const WrappedSearchForm = Form.create({ name: 'searchBar' })(SearchForm)
