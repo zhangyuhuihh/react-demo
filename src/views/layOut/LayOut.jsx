@@ -14,20 +14,21 @@ class MyLayOut extends React.Component {
     menuList: [
       {
         name: '测试',
-        role: '测试',
+        role: '权限测试1',
         icon: 'menu',
         children: [
           {
             name: '子页面1',
             path: '/PageOne',
-            role: '测试'
+            role: '权限测试3',
+            icon: ''
           }
         ]
       },
       {
         name: '测试2',
         path: '/PageTwo',
-        role: '测试2',
+        role: '权限测试2',
         icon: 'menu'
       }
     ]
@@ -85,7 +86,7 @@ class MyLayOut extends React.Component {
               key={menuList[i].name}
               title={
                 <span>
-                  <Icon type={menuList[i].icon} />
+                  {menuList[i].icon ? <Icon type={menuList[i].icon} /> : null}
                   <span>{menuList[i].name}</span>
                 </span>
               }
@@ -97,7 +98,7 @@ class MyLayOut extends React.Component {
           target[i] = (
             <Menu.Item key={menuList[i].path}>
               <Link to={menuList[i].path}>
-                <Icon type={menuList[i].icon} />
+                {menuList[i].icon ? <Icon type={menuList[i].icon} /> : null}
                 {menuList[i].name}
               </Link>
             </Menu.Item>
