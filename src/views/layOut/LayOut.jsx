@@ -99,7 +99,7 @@ class MyLayOut extends React.Component {
             <Menu.Item key={menuList[i].path}>
               <Link to={menuList[i].path}>
                 {menuList[i].icon ? <Icon type={menuList[i].icon} /> : null}
-                {menuList[i].name}
+                <span>{menuList[i].name}</span>
               </Link>
             </Menu.Item>
           )
