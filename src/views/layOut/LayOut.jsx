@@ -15,18 +15,20 @@ class MyLayOut extends React.Component {
       {
         name: '测试',
         role: '测试',
+        icon: 'menu',
         children: [
           {
             name: '子页面1',
-            path: '/test',
+            path: '/PageOne',
             role: '测试'
           }
         ]
       },
       {
         name: '测试2',
-        path: '/Testt',
-        role: '测试2'
+        path: '/PageTwo',
+        role: '测试2',
+        icon: 'menu'
       }
     ]
   }
@@ -83,7 +85,7 @@ class MyLayOut extends React.Component {
               key={menuList[i].name}
               title={
                 <span>
-                  <Icon type="mail" />
+                  <Icon type={menuList[i].icon} />
                   <span>{menuList[i].name}</span>
                 </span>
               }
@@ -94,7 +96,10 @@ class MyLayOut extends React.Component {
         } else {
           target[i] = (
             <Menu.Item key={menuList[i].path}>
-              <Link to={menuList[i].path}>{menuList[i].name}</Link>
+              <Link to={menuList[i].path}>
+                <Icon type={menuList[i].icon} />
+                {menuList[i].name}
+              </Link>
             </Menu.Item>
           )
         }

@@ -2,23 +2,23 @@ import React, { Suspense, lazy } from 'react'
 import { Route, Switch, Redirect } from 'react-router-dom'
 
 import { connect } from 'react-redux'
-import Test from '@/views/test/test'
+import PageOne from '@/views/test/PageOne'
 
-const Testt = lazy(() => import('../views/test/testt'))
+const PageTwo = lazy(() => import('../views/test/PageTwo'))
 
 class MyRouter extends React.Component {
   state = {
     // authArr: ['测试', '测试2'], // 放入redux进行权限判断
     routeList: [
       {
-        path: '/test',
-        component: Test,
-        role: '测试'
+        path: '/PageOne',
+        component: PageOne,
+        role: '权限测试1'
       },
       {
-        path: '/Testt',
-        component: Testt,
-        role: '测试2'
+        path: '/PageTwo',
+        component: PageTwo,
+        role: '权限测试2'
       }
     ]
   }
@@ -26,7 +26,7 @@ class MyRouter extends React.Component {
   render() {
     return (
       <Switch>
-        <Redirect exact from="/" to="/test" />
+        <Redirect exact from="/" to="/PageOne" />
         <Suspense fallback={<div>Loading...</div>}>
           {this.state.routeList
             .filter(v => {

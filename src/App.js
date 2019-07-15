@@ -5,7 +5,7 @@ import './assets/styles/andtEdit/part_andt_edit.scss'
 // 这里的scss文件不能再css文件里面引入，必须在scss或者js文件里面引入
 
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom'
-import singlePage from '@/views/test/singlePage'
+import singlePage from '@/views/test/SinglePage'
 
 import { connect } from 'react-redux'
 import { setAuthArr } from './store/action'
@@ -13,7 +13,7 @@ import { setAuthArr } from './store/action'
 class App extends React.Component {
   componentDidMount() {
     const { setAuthArr } = this.props
-    const arr = ['测试', '测试2']
+    const arr = ['权限测试1', '权限测试2']
     setTimeout(() => {
       setAuthArr(arr)
     }, 100)

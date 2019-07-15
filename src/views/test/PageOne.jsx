@@ -11,7 +11,7 @@ import {
   // deleteCapitalAssertsLocalBatch
 } from '@/assets/api/fixedAssetManagement/assetUsingLand'
 
-class Test extends React.Component {
+class PageOne extends React.Component {
   constructor() {
     super()
     this.state = {
@@ -359,4 +359,4 @@ class addOrEditForm extends React.Component {
 
 const WrappredAddOrEditForm = Form.create({ name: 'addOrEdit' })(addOrEditForm)
 
-export default Test
+export default PageOne

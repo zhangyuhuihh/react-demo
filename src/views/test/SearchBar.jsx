@@ -7,6 +7,7 @@ class SearchBar extends React.Component {
   render() {
     return (
       <div>
+        {/* “logProps” HOC 透传（pass through）官方文档Refs转发那块 */}
         <WrappedSearchForm {...this.props} />
       </div>
     )
