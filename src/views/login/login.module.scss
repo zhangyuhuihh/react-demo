@@ -1,0 +1,23 @@
+.login_container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background: #f3f3f3;
+  .login_title {
+    font-size: 26px;
+    margin-bottom: 24px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-align: center
+  }
+  .login_form {
+    width: 300px;
+  }
+  .login_form_forgot {
+    float: right;
+  }
+  .login_form_button {
+    width: 100%;
+  }
+}

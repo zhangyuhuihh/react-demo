@@ -33,6 +33,7 @@ class MyRouter extends React.Component {
               return this.hasPermission(v)
             })
             .map(v => {
+              // todo 这里可以添加全局路由守卫
               return (
                 <Route path={v.path} component={v.component} key={v.path} />
               )

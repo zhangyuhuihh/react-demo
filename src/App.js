@@ -6,6 +6,7 @@ import './assets/styles/andtEdit/part_andt_edit.scss'
 
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom'
 import SinglePage from '@/views/test/SinglePage'
+import Login from '@/views/login/Login.jsx'
 
 import { connect } from 'react-redux'
 import { setAuthArr } from './store/action'
@@ -23,6 +24,7 @@ class App extends React.Component {
     return (
       <Router basename="/react_test">
         <Switch>
+          <Route path="/login" component={Login} />
           <Route path="/singlePage" component={SinglePage} />
           <Route path="/" component={MyLayOut} />
         </Switch>
