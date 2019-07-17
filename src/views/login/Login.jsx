@@ -1,4 +1,5 @@
-import { Form, Icon, Input, Button, Checkbox } from 'antd'
+import { Form, Icon, Input, Button } from 'antd'
+import { withRouter } from 'react-router-dom'
 import React from 'react'
 import moduleCss from './login.module.scss'
 
@@ -8,6 +9,7 @@ class NormalLoginForm extends React.Component {
     this.props.form.validateFields((err, values) => {
       if (!err) {
         console.log('Received values of form: ', values)
+        this.props.history.push('/PageOne')
       }
     })
   }
@@ -65,15 +67,16 @@ const WrappeNormalLoginForm = Form.create({ name: 'normal_login' })(
 
 class Login extends React.Component {
   render() {
+    console.log(this.props.history)
     return (
       <div className={moduleCss.login_container}>
         <div>
           <div className={moduleCss.login_title}>后台管理系统</div>
-          <WrappeNormalLoginForm />
+          <WrappeNormalLoginForm {...this.props} />
         </div>
       </div>
     )
   }
 }
 
-export default Login
+export default withRouter(Login)
