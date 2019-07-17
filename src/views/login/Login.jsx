@@ -20,6 +20,7 @@ class NormalLoginForm extends React.Component {
       <Form onSubmit={this.handleSubmit} className={moduleCss.login_form}>
         <Form.Item>
           {getFieldDecorator('username', {
+            initialValue: 'admin',
             rules: [{ required: true, message: '请输入用户名!' }]
           })(
             <Input
@@ -30,6 +31,7 @@ class NormalLoginForm extends React.Component {
         </Form.Item>
         <Form.Item>
           {getFieldDecorator('password', {
+            initialValue: '123456',
             rules: [{ required: true, message: '请输入密码!' }]
           })(
             <Input

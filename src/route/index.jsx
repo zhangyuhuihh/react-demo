@@ -26,7 +26,7 @@ class MyRouter extends React.Component {
   render() {
     return (
       <Switch>
-        <Redirect exact from="/" to="/PageOne" />
+        <Redirect exact from="/" to="/Login" />
         <Suspense fallback={<div>Loading...</div>}>
           {this.state.routeList
             .filter(v => {
