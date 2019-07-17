@@ -1,8 +1,9 @@
 import React from 'react'
 import { Layout, Menu, Icon } from 'antd'
 import MyRouter from '@/route'
-import { Link } from 'react-router-dom'
+import { Link, withRouter } from 'react-router-dom'
 import { connect } from 'react-redux'
+import _ from 'lodash'
 
 const { Header, Sider, Content } = Layout
 const { SubMenu } = Menu
@@ -11,37 +12,91 @@ const { SubMenu } = Menu
 class MyLayOut extends React.Component {
   state = {
     collapsed: false,
+    defaultSelectedKeys: [],
+    defaultOpenKeys: [],
     menuList: [
       {
         name: '测试',
         role: '权限测试1',
+        path: '/subTestOne',
         icon: 'menu',
         children: [
           {
             name: '子页面1',
             path: '/PageOne',
             role: '权限测试3',
-            icon: ''
+            icon: '',
+            children: [
+              {
+                name: '测试2',
+                path: '/PageTwo',
+                role: '权限测试2',
+                icon: 'menu',
+                children: [
+                  {
+                    name: '测试2',
+                    path: '/PageTwo2',
+                    role: '权限测试2',
+                    icon: 'menu'
+                  }
+                ]
+              }
+            ]
           }
         ]
-      },
-      {
-        name: '测试2',
-        path: '/PageTwo',
-        role: '权限测试2',
-        icon: 'menu'
       }
+      // {
+      //   name: '测试2',
+      //   path: '/PageTwo',
+      //   role: '权限测试2',
+      //   icon: 'menu'
+      // }
     ]
   }
 
+  componentWillMount() {
+    // 这里不能用componentDidMount
+    const { pathname } = this.props.history.location
+    const { menuList } = this.state
+    const defaultOpenKeys = this.findDefaultOpenKeys(menuList, pathname)
+    console.log('defaultOpenKeys: ', defaultOpenKeys)
+    this.setState({
+      defaultSelectedKeys: [pathname],
+      defaultOpenKeys: defaultOpenKeys
+    })
+  }
+
+  findDefaultOpenKeys = (menuList, pathname) => {
+    // 探究迭代的本质
+    const saveMenuList = _.cloneDeep(menuList)
+    let arr = []
+    const diedai = (menuList, pathname) => {
+      for (let i in menuList) {
+        if (menuList[i].hasOwnProperty('children')) {
+          for (let k in menuList[i].children) {
+            if (menuList[i].children[k].path === pathname) {
+              arr.unshift(menuList[i].path)
+              diedai(saveMenuList, menuList[i].path)
+            } else {
+              diedai(menuList[i].children, pathname)
+            }
+          }
+        }
+      }
+    }
+    diedai(menuList, pathname)
+    return arr
+  }
+
   render() {
+    console.log(this.state.defaultSelectedKeys)
     return (
       <Layout className={'local_layout_container'}>
         <Sider trigger={null} collapsible collapsed={this.state.collapsed}>
           <div className="logo" />
           <Menu
-            defaultSelectedKeys={['1']}
-            defaultOpenKeys={['sub1']}
+            defaultSelectedKeys={this.state.defaultSelectedKeys}
+            defaultOpenKeys={this.state.defaultOpenKeys}
             mode="inline"
             theme="dark"
             inlineCollapsed={this.state.collapsed}
@@ -83,7 +138,7 @@ class MyLayOut extends React.Component {
         if (menuList[i].hasOwnProperty('children')) {
           target[i] = (
             <SubMenu
-              key={menuList[i].name}
+              key={menuList[i].path}
               title={
                 <span>
                   {menuList[i].icon ? <Icon type={menuList[i].icon} /> : null}
@@ -128,7 +183,9 @@ const mapStateToProps = state => {
   }
 }
 
-export default connect(
-  mapStateToProps,
-  null
-)(MyLayOut)
+export default withRouter(
+  connect(
+    mapStateToProps,
+    null
+  )(MyLayOut)
+)
