@@ -67,7 +67,6 @@ class MyLayOut extends React.Component {
   }
 
   findDefaultOpenKeys = (menuList, pathname) => {
-    // 探究迭代的本质
     const saveMenuList = _.cloneDeep(menuList)
     let arr = []
     const diedai = (menuList, pathname) => {
@@ -76,6 +75,7 @@ class MyLayOut extends React.Component {
           for (let k in menuList[i].children) {
             if (menuList[i].children[k].path === pathname) {
               arr.unshift(menuList[i].path)
+              // 关键迭代
               diedai(saveMenuList, menuList[i].path)
             } else {
               diedai(menuList[i].children, pathname)
