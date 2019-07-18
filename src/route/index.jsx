@@ -27,6 +27,7 @@ export const RouteConfig = [
     name: '三级菜单',
     role: '三级菜单',
     path: '/threeLevelMenu',
+    redirect: '/threeLevelMenu/PageOne',
     icon: 'menu',
     children: [
       {
@@ -39,6 +40,7 @@ export const RouteConfig = [
       {
         name: '三级菜单-2',
         path: '/threeLevelMenu/threeLevelMenu-sub',
+        redirect: '/threeLevelMenu/threeLevelMenu-sub/PageTwo',
         role: '三级菜单-2',
         icon: 'menu',
         children: [

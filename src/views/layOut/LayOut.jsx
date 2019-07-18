@@ -14,18 +14,26 @@ const { SubMenu } = Menu
 class MyLayOut extends React.Component {
   state = {
     collapsed: false,
-    defaultSelectedKeys: [],
+    selectedKeys: [],
     defaultOpenKeys: [],
     menuList: []
   }
 
   componentWillMount() {
     // 这里不能用componentDidMount
+    this.initMenu()
+  }
+
+  componentWillReceiveProps() {
+    this.initMenu()
+  }
+
+  initMenu = () => {
     const { pathname } = this.props.history.location
     const newMenuList = this.produceNewMenuList(RouteConfig)
     const defaultOpenKeys = this.findDefaultOpenKeys(newMenuList, pathname)
     this.setState({
-      defaultSelectedKeys: [pathname],
+      selectedKeys: [pathname],
       defaultOpenKeys: defaultOpenKeys,
       menuList: newMenuList
     })
@@ -75,7 +83,7 @@ class MyLayOut extends React.Component {
         <Sider trigger={null} collapsible collapsed={this.state.collapsed}>
           <div className="logo" />
           <Menu
-            defaultSelectedKeys={this.state.defaultSelectedKeys}
+            selectedKeys={this.state.selectedKeys}
             defaultOpenKeys={this.state.defaultOpenKeys}
             mode="inline"
             theme="dark"
