@@ -14,7 +14,15 @@ import { setAuthArr } from './store/action'
 class App extends React.Component {
   componentDidMount() {
     const { setAuthArr } = this.props
-    const arr = ['权限测试1', '权限测试2', '权限测试3']
+    const arr = [
+      '首页权限',
+      '二级菜单',
+      '二级菜单-1',
+      '三级菜单',
+      '三级菜单-1',
+      '三级菜单-2',
+      '三级菜单-2-1'
+    ]
     setTimeout(() => {
       setAuthArr(arr)
     }, 100)

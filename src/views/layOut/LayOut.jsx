@@ -1,5 +1,6 @@
 import React from 'react'
 import { Layout, Menu, Icon } from 'antd'
+import MyBreadcrumb from './MyBreadcrumb'
 import MyRouter from '@/route'
 import { Link, withRouter } from 'react-router-dom'
 import { connect } from 'react-redux'
@@ -16,41 +17,53 @@ class MyLayOut extends React.Component {
     defaultOpenKeys: [],
     menuList: [
       {
-        name: '测试',
-        role: '权限测试1',
-        path: '/subTestOne',
+        name: '首页',
+        path: '/Dashboard',
+        role: '首页权限',
+        icon: 'menu'
+      },
+      {
+        name: '二级菜单',
+        role: '二级菜单',
+        path: '/twoLevelMenu',
         icon: 'menu',
         children: [
           {
-            name: '子页面1',
-            path: '/PageOne',
-            role: '权限测试3',
-            icon: '',
+            name: '二级菜单-1',
+            path: '/twoLevelMenu/PageOne',
+            role: '二级菜单-1',
+            icon: ''
+          }
+        ]
+      },
+      {
+        name: '三级菜单',
+        role: '三级菜单',
+        path: '/threeLevelMenu',
+        icon: 'menu',
+        children: [
+          {
+            name: '三级菜单-1',
+            path: '/threeLevelMenu/PageOne',
+            role: '三级菜单-1',
+            icon: ''
+          },
+          {
+            name: '三级菜单-2',
+            path: '/threeLevelMenu/threeLevelMenu-sub',
+            role: '三级菜单-2',
+            icon: 'menu',
             children: [
               {
-                name: '测试2',
-                path: '/PageTwo',
-                role: '权限测试2',
-                icon: 'menu',
-                children: [
-                  {
-                    name: '测试2',
-                    path: '/PageTwo2',
-                    role: '权限测试2',
-                    icon: 'menu'
-                  }
-                ]
+                name: '三级菜单-2-1',
+                path: '/threeLevelMenu/threeLevelMenu-sub/PageTwo',
+                role: '三级菜单-2-1',
+                icon: ''
               }
             ]
           }
         ]
       }
-      // {
-      //   name: '测试2',
-      //   path: '/PageTwo',
-      //   role: '权限测试2',
-      //   icon: 'menu'
-      // }
     ]
   }
 
@@ -59,37 +72,36 @@ class MyLayOut extends React.Component {
     const { pathname } = this.props.history.location
     const { menuList } = this.state
     const defaultOpenKeys = this.findDefaultOpenKeys(menuList, pathname)
-    console.log('defaultOpenKeys: ', defaultOpenKeys)
     this.setState({
       defaultSelectedKeys: [pathname],
       defaultOpenKeys: defaultOpenKeys
     })
   }
 
+  // 适用上述格式多层级菜单
   findDefaultOpenKeys = (menuList, pathname) => {
     const saveMenuList = _.cloneDeep(menuList)
     let arr = []
-    const diedai = (menuList, pathname) => {
+    const itera = (menuList, pathname) => {
       for (let i in menuList) {
         if (menuList[i].hasOwnProperty('children')) {
           for (let k in menuList[i].children) {
             if (menuList[i].children[k].path === pathname) {
               arr.unshift(menuList[i].path)
               // 关键迭代
-              diedai(saveMenuList, menuList[i].path)
+              itera(saveMenuList, menuList[i].path)
             } else {
-              diedai(menuList[i].children, pathname)
+              itera(menuList[i].children, pathname)
             }
           }
         }
       }
     }
-    diedai(menuList, pathname)
+    itera(menuList, pathname)
     return arr
   }
 
   render() {
-    console.log(this.state.defaultSelectedKeys)
     return (
       <Layout className={'local_layout_container'}>
         <Sider trigger={null} collapsible collapsed={this.state.collapsed}>
@@ -111,6 +123,7 @@ class MyLayOut extends React.Component {
               type={this.state.collapsed ? 'menu-unfold' : 'menu-fold'}
               onClick={this.toggle}
             />
+            <MyBreadcrumb />
           </Header>
           <Content
             style={{
@@ -131,6 +144,7 @@ class MyLayOut extends React.Component {
     return this.iterateMenu(this.state.menuList)
   }
 
+  // 适用上述格式多层级菜单
   iterateMenu(menuList) {
     let target = []
     for (let i in menuList) {

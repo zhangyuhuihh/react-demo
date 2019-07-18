@@ -2,23 +2,46 @@ import React, { Suspense, lazy } from 'react'
 import { Route, Switch, Redirect } from 'react-router-dom'
 
 import { connect } from 'react-redux'
-import PageOne from '@/views/test/PageOne'
 
-const PageTwo = lazy(() => import('../views/test/PageTwo'))
+const Dashboard = lazy(() => import('../views/test/Dashboard'))
+const TwoLevelPageOne = lazy(() => import('../views/test/twoLevelMenu/PageOne'))
+// const TwoLevelPageTwo = lazy(() => import('../views/test/twoLevelMenu/PageTwo'))
 
+const ThreeLevelPageOne = lazy(() => import('../views/test/threeLevelMenu/PageOne'))
+const ThreeLevelPageTwo = lazy(() => import('../views/test/threeLevelMenu/PageTwo'))
 class MyRouter extends React.Component {
   state = {
     // authArr: ['测试', '测试2'], // 放入redux进行权限判断
     routeList: [
       {
-        path: '/PageOne',
-        component: PageOne,
-        role: '权限测试1'
+        path: '/Dashboard',
+        component: Dashboard,
+        role: '首页权限'
+      },
+      // {
+      //   path: '/twoLevelMenu',
+      //   component: TwoLevelPageOne,
+      //   role: '二级菜单'
+      // },
+      {
+        path: '/twoLevelMenu/PageOne',
+        component: TwoLevelPageOne,
+        role: '二级菜单-1'
+      },
+      // {
+      //   path: '/threeLevelMenu',
+      //   component: TwoLevelPageOne,
+      //   role: '三级菜单'
+      // },
+      {
+        path: '/threeLevelMenu/PageOne',
+        component: ThreeLevelPageOne,
+        role: '三级菜单-1'
       },
       {
-        path: '/PageTwo',
-        component: PageTwo,
-        role: '权限测试2'
+        path: '/threeLevelMenu/threeLevelMenu-sub/PageTwo',
+        component: ThreeLevelPageTwo,
+        role: '三级菜单-2-1'
       }
     ]
   }

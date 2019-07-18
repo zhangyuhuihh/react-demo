@@ -7,11 +7,11 @@ import SearchBar from './SearchBar'
 import {
   getCapitalAssertsLocalsForPage,
   insertCapitalAssertsLocal,
-  updateCapitalAssertsLocalById
-  // deleteCapitalAssertsLocalBatch
+  updateCapitalAssertsLocalById,
+  deleteCapitalAssertsLocalBatch
 } from '@/assets/api/fixedAssetManagement/assetUsingLand'
 
-class Test extends React.Component {
+class PageOne extends React.Component {
   constructor() {
     super()
     this.state = {
@@ -36,41 +36,43 @@ class Test extends React.Component {
       listData: [
         {
           key: '1',
-          firstName: 'John',
-          lastName: 'Brown',
-          age: 32
+          name: '张三',
+          age: 25,
+          work: '苦逼前端小开发'
         },
         {
           key: '2',
-          firstName: 'Jim',
-          lastName: 'Green',
-          age: 42
+          name: '李四',
+          age: 42,
+          work: '苦逼前端小开发'
         },
         {
           key: '3',
-          firstName: 'Joe',
-          lastName: 'Black',
-          age: 32
+          name: '王二',
+          age: 32,
+          work: '苦逼前端小开发'
+        },
+        {
+          key: '4',
+          name: '麻子',
+          age: 32,
+          work: '苦逼前端小开发'
         }
       ]
     }
 
     this.columns = [
       {
-        dataIndex: 'firstName',
-        title: '使用地理位置编号'
-      },
-      {
-        dataIndex: 'lastName',
-        title: '使用地理位置名称'
+        dataIndex: 'name',
+        title: '姓名'
       },
       {
         dataIndex: 'age',
-        title: '发布人'
+        title: '年龄'
       },
       {
-        dataIndex: 'address',
-        title: '发布时间'
+        dataIndex: 'work',
+        title: '职业'
       },
       {
         dataIndex: 'action',
@@ -81,7 +83,8 @@ class Test extends React.Component {
   }
 
   componentDidMount() {
-    this.setTable()
+    // 加载表格
+    // this.setTable()
   }
 
   actionRender = (text, record, index) => {
@@ -145,7 +148,7 @@ class Test extends React.Component {
         pageSize: pageSize
       },
       () => {
-        this.setTable()
+        // this.setTable()
       }
     )
   }
@@ -156,7 +159,7 @@ class Test extends React.Component {
         currentPage: current
       },
       () => {
-        this.setTable()
+        // this.setTable()
       }
     )
   }
@@ -180,13 +183,23 @@ class Test extends React.Component {
     this.setState({
       modalTitle: '编辑',
       initFormValues: {
-        name: '张三'
+        name: record.name
       },
       addOrEditVisible: true
     })
   }
 
-  handleDelete = record => {}
+  handleDelete = record => {
+    Modal.confirm({
+      title: '删除',
+      content: '确认删除此条数据?',
+      okText: '确认',
+      cancelText: '取消',
+      onOk: this.deleteData
+    })
+  }
+
+  doDelete = () => {}
 
   handleCancelDetailModel = () => {
     this.setState({
@@ -319,7 +332,11 @@ class Test extends React.Component {
   }
 
   // 删除
-  async deleteData() {}
+  async deleteData(id) {
+    deleteCapitalAssertsLocalBatch(id).then(() => {
+      // this.setTable()
+    })
+  }
 
   render() {
     return (
@@ -359,4 +376,4 @@ class addOrEditForm extends React.Component {
 
 const WrappredAddOrEditForm = Form.create({ name: 'addOrEdit' })(addOrEditForm)
 
-export default Test
+export default PageOne
