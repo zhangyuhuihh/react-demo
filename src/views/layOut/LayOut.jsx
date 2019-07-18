@@ -1,7 +1,8 @@
 import React from 'react'
 import { Layout, Menu, Icon } from 'antd'
 import MyBreadcrumb from './MyBreadcrumb'
-import MyRouter from '@/route'
+import AppMain from './AppMain'
+import { RouteConfig } from '@/route'
 import { Link, withRouter } from 'react-router-dom'
 import { connect } from 'react-redux'
 import _ from 'lodash'
@@ -15,66 +16,18 @@ class MyLayOut extends React.Component {
     collapsed: false,
     defaultSelectedKeys: [],
     defaultOpenKeys: [],
-    menuList: [
-      {
-        name: '首页',
-        path: '/Dashboard',
-        role: '首页权限',
-        icon: 'menu'
-      },
-      {
-        name: '二级菜单',
-        role: '二级菜单',
-        path: '/twoLevelMenu',
-        icon: 'menu',
-        children: [
-          {
-            name: '二级菜单-1',
-            path: '/twoLevelMenu/PageOne',
-            role: '二级菜单-1',
-            icon: ''
-          }
-        ]
-      },
-      {
-        name: '三级菜单',
-        role: '三级菜单',
-        path: '/threeLevelMenu',
-        icon: 'menu',
-        children: [
-          {
-            name: '三级菜单-1',
-            path: '/threeLevelMenu/PageOne',
-            role: '三级菜单-1',
-            icon: ''
-          },
-          {
-            name: '三级菜单-2',
-            path: '/threeLevelMenu/threeLevelMenu-sub',
-            role: '三级菜单-2',
-            icon: 'menu',
-            children: [
-              {
-                name: '三级菜单-2-1',
-                path: '/threeLevelMenu/threeLevelMenu-sub/PageTwo',
-                role: '三级菜单-2-1',
-                icon: ''
-              }
-            ]
-          }
-        ]
-      }
-    ]
+    menuList: []
   }
 
   componentWillMount() {
     // 这里不能用componentDidMount
     const { pathname } = this.props.history.location
-    const { menuList } = this.state
-    const defaultOpenKeys = this.findDefaultOpenKeys(menuList, pathname)
+    const newMenuList = this.produceNewMenuList(RouteConfig)
+    const defaultOpenKeys = this.findDefaultOpenKeys(newMenuList, pathname)
     this.setState({
       defaultSelectedKeys: [pathname],
-      defaultOpenKeys: defaultOpenKeys
+      defaultOpenKeys: defaultOpenKeys,
+      menuList: newMenuList
     })
   }
 
@@ -98,6 +51,21 @@ class MyLayOut extends React.Component {
       }
     }
     itera(menuList, pathname)
+    return arr
+  }
+
+  produceNewMenuList = RouteConfig => {
+    let arr = []
+    for (let i in RouteConfig) {
+      if (RouteConfig[i].hasOwnProperty('children')) {
+        arr[i] = {
+          ..._.omit(RouteConfig[i], ['component']),
+          children: this.produceNewMenuList(RouteConfig[i].children)
+        }
+      } else {
+        arr[i] = _.omit(RouteConfig[i], ['component'])
+      }
+    }
     return arr
   }
 
@@ -133,7 +101,7 @@ class MyLayOut extends React.Component {
               minHeight: 280
             }}
           >
-            <MyRouter />
+            <AppMain />
           </Content>
         </Layout>
       </Layout>
