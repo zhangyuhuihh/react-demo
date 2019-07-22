@@ -23,6 +23,7 @@ export const RouteConfig = [
     name: '二级菜单',
     role: '二级菜单',
     path: '/twoLevelMenu',
+    redirect: '/twoLevelMenu/PageOne',
     icon: 'menu',
     children: [
       {
