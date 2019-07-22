@@ -10,22 +10,22 @@ class AppMain extends React.Component {
       <Switch>su
         <Redirect exact from="/" to="/Login" />
         {/* Redirect不能放在 Suspense里面*/}
-        {this.produceRoute(RouteConfig).arr2}
+        {this.produceRoute(RouteConfig).redirectArr}
         <Suspense fallback={<div>Loading...</div>}>
-          {this.produceRoute(RouteConfig).arr1}
+          {this.produceRoute(RouteConfig).routeArr}
         </Suspense>
       </Switch>
     )
   }
 
   produceRoute = RouteConfigs => {
-    let arr1 = []
-    let arr2 = []
+    let routeArr = []
+    let redirectArr = []
     const itera = routeList => {
       for (let i = 0; i < routeList.length; i++) {
         if (this.hasPermission(routeList[i])) {
           if (routeList[i].hasOwnProperty('component')) {
-            arr1.push(
+            routeArr.push(
               <Route
                 path={routeList[i].path}
                 name={routeList[i].role}
@@ -35,7 +35,7 @@ class AppMain extends React.Component {
             )
           } else {
             if (routeList[i].hasOwnProperty('redirect')) {
-              arr2.push(
+              redirectArr.push(
                 <Redirect
                   exact
                   from={routeList[i].path}
@@ -51,8 +51,8 @@ class AppMain extends React.Component {
     }
     itera(RouteConfigs)
     return {
-      arr1,
-      arr2
+      routeArr,
+      redirectArr
     }
   }
 
