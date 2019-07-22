@@ -10,8 +10,9 @@ class MyBreadcrumb extends React.Component {
     const pathSnippets = location.pathname.split('/').filter(i => i)
     const extraBreadcrumbItems = pathSnippets.map((_, index) => {
       const path = `/${pathSnippets.slice(0, index + 1).join('/')}`
+      console.log('path: ', path)
       if (path === '/Dashboard') {
-        return ''
+        return []
       }
       return (
         <Breadcrumb.Item key={path}>
@@ -19,11 +20,17 @@ class MyBreadcrumb extends React.Component {
         </Breadcrumb.Item>
       )
     })
-    return [
-      <Breadcrumb.Item key="Dashboard">
-        <Link to="/Dashboard">首页</Link>
-      </Breadcrumb.Item>
-    ].concat(extraBreadcrumbItems)
+    return (
+      <div style={{ display: 'inline-block' }}>
+        <Breadcrumb>
+          {[
+            <Breadcrumb.Item key="Dashboard">
+              <Link to="/Dashboard">首页</Link>
+            </Breadcrumb.Item>
+          ].concat(extraBreadcrumbItems)}
+        </Breadcrumb>
+      </div>
+    )
   }
 
   produceBreadcrumbItem = path => {
