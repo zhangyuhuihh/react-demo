@@ -1,5 +1,16 @@
 import { lazy } from 'react'
 
+/**
+ * name: 路由对应的名称
+ * role: 路由对应的权限名称
+ * component: 路由对应的组件
+ * path: 路由对应的path(子路由的path需加上对应所有父级的path)
+ * icon: 图标
+ * redirect: 决定此路由是否是大菜单，以跳转到对应的子路由
+ * children: 大菜单，子路由
+ */
+
+
 export const RouteConfig = [
   {
     name: '首页',
