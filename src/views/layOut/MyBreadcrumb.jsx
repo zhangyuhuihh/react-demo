@@ -10,7 +10,6 @@ class MyBreadcrumb extends React.Component {
     const pathSnippets = location.pathname.split('/').filter(i => i)
     const extraBreadcrumbItems = pathSnippets.map((_, index) => {
       const path = `/${pathSnippets.slice(0, index + 1).join('/')}`
-      console.log('path: ', path)
       if (path === '/Dashboard') {
         return []
       }

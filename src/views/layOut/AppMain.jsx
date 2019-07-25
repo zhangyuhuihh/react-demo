@@ -7,7 +7,7 @@ import { RouteConfig } from '@/route'
 class AppMain extends React.Component {
   render() {
     return (
-      <Switch>su
+      <Switch>
         <Redirect exact from="/" to="/Login" />
         {/* Redirect不能放在 Suspense里面*/}
         {this.produceRoute(RouteConfig).redirectArr}
