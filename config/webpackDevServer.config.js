@@ -90,6 +90,15 @@ module.exports = function(proxy, allowedHost) {
         pathRewrite: {
           "^/pm/web": ""
         }
+      },
+      '/test': {
+        target: "http://192.168.200.134:3001/test",
+        // target: "http://192.168.199.15:10003/pm/web",
+        changeOrigin: true,
+        cookieDomainRewrite: "localhost",
+        pathRewrite: {
+          "^/test": ""
+        }
       }
     },
     before(app, server) {

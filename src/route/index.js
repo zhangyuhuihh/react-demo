@@ -66,5 +66,12 @@ export const RouteConfig = [
         ]
       }
     ]
-  }
+  },
+  {
+    name: 'expressDemo',
+    path: '/expressDemo',
+    component: lazy(() => import('../views/expressDemo')),
+    role: 'express测试',
+    icon: 'menu'
+  },
 ]
