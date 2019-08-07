@@ -4,14 +4,7 @@ import { Table, Button, Modal, Form, Input } from 'antd'
 
 import SearchBar from '@/components/SearchBar'
 
-import {
-  // getCapitalAssertsLocalsForPage,
-  insertCapitalAssertsLocal,
-  updateCapitalAssertsLocalById,
-  deleteCapitalAssertsLocalBatch
-} from '@/assets/api/fixedAssetManagement/assetUsingLand'
-
-import { getAll } from '@/assets/api/expressDemo'
+import { getAll, addOne, deleteOne, editOne } from '@/assets/api/expressDemo'
 
 class ExpressDemo extends React.Component {
   constructor() {
@@ -20,9 +13,10 @@ class ExpressDemo extends React.Component {
       detailVisible: false,
       addOrEditVisible: false,
       modalTitle: '新增',
+      modelType: '',
       initFormValues: {},
+      currentId: '',
       detailObject: {},
-
       currentPage: 1,
       pageSize: 10,
 
@@ -40,24 +34,6 @@ class ExpressDemo extends React.Component {
         //   key: '1',
         //   name: '张三',
         //   age: 25,
-        //   work: '苦逼前端小开发'
-        // },
-        // {
-        //   key: '2',
-        //   name: '李四',
-        //   age: 42,
-        //   work: '苦逼前端小开发'
-        // },
-        // {
-        //   key: '3',
-        //   name: '王二',
-        //   age: 32,
-        //   work: '苦逼前端小开发'
-        // },
-        // {
-        //   key: '4',
-        //   name: '麻子',
-        //   age: 32,
         //   work: '苦逼前端小开发'
         // }
       ]
@@ -176,6 +152,7 @@ class ExpressDemo extends React.Component {
   handleAdd = () => {
     this.setState({
       modalTitle: '新增',
+      modelType: 'add',
       addOrEditVisible: true
     })
   }
@@ -184,6 +161,8 @@ class ExpressDemo extends React.Component {
     // 编辑数据回显
     this.setState({
       modalTitle: '编辑',
+      modelType: 'edit',
+      currentId: record.id,
       initFormValues: {
         name: record.name
       },
@@ -197,11 +176,11 @@ class ExpressDemo extends React.Component {
       content: '确认删除此条数据?',
       okText: '确认',
       cancelText: '取消',
-      onOk: this.deleteData
+      onOk: () => {
+        this.deleteData(record.id)
+      }
     })
   }
-
-  doDelete = () => {}
 
   handleCancelDetailModel = () => {
     this.setState({
@@ -215,10 +194,19 @@ class ExpressDemo extends React.Component {
       if (errors) {
         return
       }
-      // const formData = formTovalidate.getFieldsValue()
-      // this.setState({
-      //   addOrEditVisible: false
-      // })
+      // 新增的情况下
+      const { modelType } = this.state
+      if (modelType === 'add') {
+        const formData = formToValidate.getFieldsValue()
+        this.addData(formData)
+      }
+      if (modelType === 'edit') {
+        const formData = formToValidate.getFieldsValue()
+        this.editData(formData)
+      }
+      this.setState({
+        addOrEditVisible: false
+      })
     })
   }
 
@@ -320,24 +308,31 @@ class ExpressDemo extends React.Component {
 
   // 新增
   async addData(insertData = {}) {
-    await insertCapitalAssertsLocal({ ...insertData })
+    await addOne({ ...insertData })
     this.setState({
       addOrEditVisible: false
     })
+    this.setTable()
   }
 
   // 编辑
   async editData(editData = {}) {
-    await updateCapitalAssertsLocalById({ ...editData })
+    await editOne({
+      ...editData,
+      id: this.state.currentId
+    })
     this.setState({
       addOrEditVisible: false
     })
+    this.setTable()
   }
 
   // 删除
   async deleteData(id) {
-    deleteCapitalAssertsLocalBatch(id).then(() => {
-      // this.setTable()
+    deleteOne({
+      id: [id]
+    }).then(() => {
+      this.setTable()
     })
   }
 
