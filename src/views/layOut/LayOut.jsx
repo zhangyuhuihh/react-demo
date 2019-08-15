@@ -3,6 +3,7 @@ import { Layout, Menu, Icon } from 'antd'
 import MyBreadcrumb from './MyBreadcrumb'
 import AppMain from './AppMain'
 import { RouteConfig } from '@/route'
+import TagsView from '@/components/TagsView'
 import { Link, withRouter } from 'react-router-dom'
 import { connect } from 'react-redux'
 import _ from 'lodash'
@@ -24,11 +25,13 @@ class MyLayOut extends React.Component {
     this.initMenu()
   }
 
-  componentWillReceiveProps() {
+  componentWillReceiveProps() { // 这个生命周期，类似于computed,在props变化的时候派生出状态给state。或者类似于watch,在props变化的时候，做点什么
     this.initMenu()
   }
 
   initMenu = () => {
+    // 这里是所谓的“派生”状态，即state 依赖 props 的情况该如何处理（但是这里也有小小的不同，这里的props其实是相当于一个初始的值，“init”的概念
+    // 类比vue的computed计算属性，派生状态的区别
     const { pathname } = this.props.history.location
     const newMenuList = this.produceNewMenuList(RouteConfig)
     const defaultOpenKeys = this.findDefaultOpenKeys(newMenuList, pathname)
@@ -101,6 +104,7 @@ class MyLayOut extends React.Component {
             />
             <MyBreadcrumb />
           </Header>
+          <TagsView></TagsView>
           <Content
             style={{
               margin: '24px 16px',

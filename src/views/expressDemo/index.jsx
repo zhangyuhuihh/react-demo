@@ -246,6 +246,7 @@ class ExpressDemo extends React.Component {
       <Table
         rowSelection={this.rowSelection}
         rowKey={'id'}
+        scroll={{ y: 200 }}
         columns={this.columns}
         dataSource={listData}
         pagination={this.state.paginationOption}
