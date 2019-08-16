@@ -26,7 +26,9 @@ const visitedViewsReducer = (
       } else {
         return state
       }
-      // return state.concat(action.visitedObj)
+    // return state.concat(action.visitedObj)
+    case 'REMOVE_VISITIEDVIEWS':
+      return state.filter(v => v.path !== action.visitedObj.path)
     default:
       return state
   }
