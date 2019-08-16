@@ -21,6 +21,7 @@ class TagsView extends React.Component {
 
   componentWillReceiveProps() {
     // 这个生命周期，类似于computed,在props变化的时候派生出状态给state。或者类似于watch,在props变化的时候，做点什么
+    this.initTags()
     this.initActiveTag()
   }
 
