@@ -16,6 +16,7 @@ class TagsView extends React.Component {
 
   componentDidMount() {
     this.initTags()
+    this.initActiveTag()
   }
 
   componentWillReceiveProps() {
