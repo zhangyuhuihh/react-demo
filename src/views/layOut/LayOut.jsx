@@ -6,6 +6,7 @@ import { RouteConfig } from '@/route'
 import TagsView from '@/components/TagsView'
 import { Link, withRouter } from 'react-router-dom'
 import { connect } from 'react-redux'
+import { addVisitiedViews } from '@/store/action'
 import _ from 'lodash'
 
 const { Header, Sider, Content } = Layout
@@ -16,7 +17,7 @@ class MyLayOut extends React.Component {
   state = {
     collapsed: false,
     selectedKeys: [],
-    defaultOpenKeys: [],
+    openKeys: [],
     menuList: []
   }
 
@@ -25,7 +26,8 @@ class MyLayOut extends React.Component {
     this.initMenu()
   }
 
-  componentWillReceiveProps() { // 这个生命周期，类似于computed,在props变化的时候派生出状态给state。或者类似于watch,在props变化的时候，做点什么
+  componentWillReceiveProps() {
+    // 这个生命周期，类似于computed,在props变化的时候派生出状态给state。或者类似于watch,在props变化的时候，做点什么
     this.initMenu()
   }
 
@@ -34,16 +36,18 @@ class MyLayOut extends React.Component {
     // 类比vue的computed计算属性，派生状态的区别
     const { pathname } = this.props.history.location
     const newMenuList = this.produceNewMenuList(RouteConfig)
-    const defaultOpenKeys = this.findDefaultOpenKeys(newMenuList, pathname)
+    const newOpenKeys = this.findopenKeys(newMenuList, pathname).concat(
+      this.state.openKeys
+    )
     this.setState({
       selectedKeys: [pathname],
-      defaultOpenKeys: defaultOpenKeys,
+      openKeys: newOpenKeys,
       menuList: newMenuList
     })
   }
 
-  // 适用上述格式多层级菜单
-  findDefaultOpenKeys = (menuList, pathname) => {
+  // 适用上述格式多层级菜单,这里由于迭代，算重了，所以返回结果去重
+  findopenKeys = (menuList, pathname) => {
     const saveMenuList = _.cloneDeep(menuList)
     let arr = []
     const itera = (menuList, pathname) => {
@@ -62,7 +66,7 @@ class MyLayOut extends React.Component {
       }
     }
     itera(menuList, pathname)
-    return arr
+    return _.uniq(arr)
   }
 
   produceNewMenuList = RouteConfig => {
@@ -87,7 +91,7 @@ class MyLayOut extends React.Component {
           <div className="logo" />
           <Menu
             selectedKeys={this.state.selectedKeys}
-            defaultOpenKeys={this.state.defaultOpenKeys}
+            openKeys={this.state.openKeys}
             mode="inline"
             theme="dark"
             inlineCollapsed={this.state.collapsed}
@@ -104,7 +108,7 @@ class MyLayOut extends React.Component {
             />
             <MyBreadcrumb />
           </Header>
-          <TagsView></TagsView>
+          <TagsView />
           <Content
             style={{
               margin: '24px 16px',
@@ -139,13 +143,17 @@ class MyLayOut extends React.Component {
                   <span>{menuList[i].name}</span>
                 </span>
               }
+              onTitleClick={this.handleSubMenuClick}
             >
               {this.iterateMenu(menuList[i].children)}
             </SubMenu>
           )
         } else {
           target[i] = (
-            <Menu.Item key={menuList[i].path}>
+            <Menu.Item
+              key={menuList[i].path}
+              onClick={v => this.handleChangeMenu(v, menuList[i])}
+            >
               <Link to={menuList[i].path}>
                 {menuList[i].icon ? <Icon type={menuList[i].icon} /> : null}
                 <span>{menuList[i].name}</span>
@@ -156,6 +164,28 @@ class MyLayOut extends React.Component {
       }
     }
     return target
+  }
+
+  handleChangeMenu = (params, menu) => {
+    const { addVisitiedViews } = this.props
+    addVisitiedViews({
+      routeName: menu.name,
+      path: menu.path
+    })
+  }
+
+  // menu的openKeys一旦定义，就变成了了完全受控组件，所有的东西都要自己通过更新react的state来更新所有状态
+  handleSubMenuClick = ({ key }) => {
+    let newOpenKeys = []
+    const isHave = this.state.openKeys.includes(key)
+    if (isHave) {
+      newOpenKeys = this.state.openKeys.filter(v => v !== key)
+    } else {
+      newOpenKeys = [...this.state.openKeys, key]
+    }
+    this.setState({
+      openKeys: newOpenKeys
+    })
   }
 
   hasPermission(v) {
@@ -177,9 +207,13 @@ const mapStateToProps = state => {
   }
 }
 
+const mapDispatchToProps = {
+  addVisitiedViews
+}
+
 export default withRouter(
   connect(
     mapStateToProps,
-    null
+    mapDispatchToProps
   )(MyLayOut)
 )
