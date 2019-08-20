@@ -12,6 +12,15 @@ class TagsView extends React.Component {
     this.state = {
       currentActiveTag: ''
     }
+    this.scrollRef = React.createRef()
+
+    this.tagList = []
+
+    this.setTagRef = (element, item) => {
+      if (!this.tagList.includes(element) && element !== null) {
+        this.tagList.push(element)
+      }
+    }
   }
 
   componentDidMount() {
@@ -39,8 +48,12 @@ class TagsView extends React.Component {
 
   initActiveTag = () => {
     const { pathname } = this.props.history.location
+    // const { visitiedViews } = this.props
     this.setState({
       currentActiveTag: pathname
+    }, () => {
+      const tagName = this.findCurrentTagName(pathname)
+      this.moveToTarget(tagName)
     })
   }
 
@@ -54,7 +67,8 @@ class TagsView extends React.Component {
             itera(element.children)
           }
         } else {
-          if (element.hasOwnProperty('component')) { // 避免添加二级菜单到TagsView上
+          if (element.hasOwnProperty('component')) {
+            // 避免添加二级菜单到TagsView上
             currentName = element.name
           }
         }
@@ -91,15 +105,73 @@ class TagsView extends React.Component {
     }
   }
 
+  handleScroll = e => {
+    e.stopPropagation()
+    const eventDelta = e.wheelDelta || -e.deltaY * 40
+    const $scrollWrapper = this.scrollRef.current
+    $scrollWrapper.scrollLeft = $scrollWrapper.scrollLeft + eventDelta / 4
+  }
+
+  moveToTarget = currentTag => {
+    const tagAndTagSpacing = 4
+
+    const $container = this.scrollRef.current
+    const $containerWidth = $container.offsetWidth
+    const $scrollWrapper = this.scrollRef.current
+    const tagList = this.tagList
+
+    let firstTag = null
+    let lastTag = null
+
+    // find first tag and last tag
+    if (tagList.length > 0) {
+      firstTag = tagList[0]
+      lastTag = tagList[tagList.length - 1]
+    }
+
+    if (firstTag.innerText === currentTag) {
+      $scrollWrapper.scrollLeft = 0
+    } else if (lastTag.innerText === currentTag) {
+      $scrollWrapper.scrollLeft = $scrollWrapper.scrollWidth - $containerWidth
+    } else {
+      // find preTag and nextTag
+      const currentIndex = tagList.findIndex(item => item.innerText === currentTag)
+      // ;
+      const prevTag = tagList[currentIndex - 1]
+      const nextTag = tagList[currentIndex + 1]
+
+      // the tag's offsetLeft after of nextTag
+      const afterNextTagOffsetLeft =
+        nextTag.offsetLeft + nextTag.offsetWidth + tagAndTagSpacing
+
+      // the tag's offsetLeft before of prevTag
+      const beforePrevTagOffsetLeft = prevTag.offsetLeft - tagAndTagSpacing
+
+      if (
+        afterNextTagOffsetLeft >
+        $scrollWrapper.scrollLeft + $containerWidth
+      ) {
+        $scrollWrapper.scrollLeft = afterNextTagOffsetLeft - $containerWidth
+      } else if (beforePrevTagOffsetLeft < $scrollWrapper.scrollLeft) {
+        $scrollWrapper.scrollLeft = beforePrevTagOffsetLeft
+      }
+    }
+  }
+
   render() {
     const { visitiedViews } = this.props
     const { currentActiveTag } = this.state
     return (
-      <div className={moduleCss.container}>
+      <div
+        ref={this.scrollRef}
+        className={moduleCss.container}
+        onWheel={this.handleScroll}
+      >
         <div className={moduleCss.tagsViewWrapper}>
           {visitiedViews.map(item => {
             return (
               <div
+                ref={element => this.setTagRef(element, item)}
                 key={item.path}
                 className={`${moduleCss.tagsViewItem} ${
                   currentActiveTag === item.path ? moduleCss.currentActive : ''
