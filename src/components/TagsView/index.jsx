@@ -28,11 +28,14 @@ class TagsView extends React.Component {
   initTags = () => {
     const { addVisitiedViews } = this.props
     const { pathname } = this.props.history.location
-    const tagName = this.findCurrentTagName(pathname)
-    addVisitiedViews({
-      routeName: tagName,
-      path: pathname
-    })
+    if (pathname !== '/') {
+      // 这边由于pathname第一次为/, 第二次为传入的值，会有两次执行。会导致多传入一层'/',componentWillReceiveProps中传入派生状态的问题
+      const tagName = this.findCurrentTagName(pathname)
+      addVisitiedViews({
+        routeName: tagName,
+        path: pathname
+      })
+    }
   }
 
   initActiveTag = () => {
@@ -74,13 +77,15 @@ class TagsView extends React.Component {
       return
     }
     for (let i = 0; i < visitiedViews.length; i++) {
-      if (visitiedViews[i].path === item.path && currentActiveTag === item.path) {
+      if (
+        visitiedViews[i].path === item.path &&
+        currentActiveTag === item.path
+      ) {
         if (i === visitiedViews.length - 1) {
           this.props.history.push(visitiedViews[i - 1].path)
         } else {
           this.props.history.push(visitiedViews[i + 1].path)
         }
-        
       }
     }
   }
