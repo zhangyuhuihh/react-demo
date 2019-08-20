@@ -21,13 +21,17 @@ class TagsView extends React.Component {
 
   componentWillReceiveProps() {
     // 这个生命周期，类似于computed,在props变化的时候派生出状态给state。或者类似于watch,在props变化的时候，做点什么
-    this.initTags()
-    this.initActiveTag()
+    // todo 暂且采用异步的方式，解决props.history.location在一次redirect中有两次addVisitiedViews的问题, i dont know how to do it
+    setTimeout(() => {
+      this.initTags()
+      this.initActiveTag()
+    }, 0)
   }
 
   initTags = () => {
     const { addVisitiedViews } = this.props
     const { pathname } = this.props.history.location
+    console.log('pathname: ', pathname)
     if (pathname !== '/') {
       // 这边由于pathname第一次为/, 第二次为传入的值，会有两次执行。会导致多传入一层'/',componentWillReceiveProps中传入派生状态的问题
       const tagName = this.findCurrentTagName(pathname)
