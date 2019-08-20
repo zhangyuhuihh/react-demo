@@ -26,18 +26,29 @@ class TagsView extends React.Component {
   componentDidMount() {
     this.initTags()
     this.initActiveTag()
+    // this.setTagToRightPos() todo 异步方案到底咋办
   }
 
   componentWillReceiveProps() {
     // 这个生命周期，类似于computed,在props变化的时候派生出状态给state。或者类似于watch,在props变化的时候，做点什么
     this.initTags()
     this.initActiveTag()
+    // this.setTagToRightPos()
+  }
+
+  componentDidUpdate() {
+    // this.setTagToRightPos()
   }
 
   initTags = () => {
+    // todo 这里的异步方案到底咋办
     const { addVisitiedViews } = this.props
     const { pathname } = this.props.history.location
+    console.log('this.scrollRef: ', this.scrollRef.current);
+    console.log('this.tagList: ', this.tagList);
+    console.log('pathname: ', pathname);
     const tagName = this.findCurrentTagName(pathname)
+    console.log('tagName: ', tagName);
     if (tagName) {
       addVisitiedViews({
         routeName: tagName,
@@ -48,13 +59,17 @@ class TagsView extends React.Component {
 
   initActiveTag = () => {
     const { pathname } = this.props.history.location
-    // const { visitiedViews } = this.props
     this.setState({
       currentActiveTag: pathname
-    }, () => {
-      const tagName = this.findCurrentTagName(pathname)
-      this.moveToTarget(tagName)
     })
+  }
+
+  setTagToRightPos = () => {
+    const { pathname } = this.props.history.location
+    const tagName = this.findCurrentTagName(pathname)
+    if (tagName) {
+      this.moveToTarget(tagName)
+    }
   }
 
   findCurrentTagName(pathname) {
@@ -135,8 +150,9 @@ class TagsView extends React.Component {
       $scrollWrapper.scrollLeft = $scrollWrapper.scrollWidth - $containerWidth
     } else {
       // find preTag and nextTag
-      const currentIndex = tagList.findIndex(item => item.innerText === currentTag)
-      // ;
+      const currentIndex = tagList.findIndex(
+        item => item.innerText === currentTag
+      )
       const prevTag = tagList[currentIndex - 1]
       const nextTag = tagList[currentIndex + 1]
 
