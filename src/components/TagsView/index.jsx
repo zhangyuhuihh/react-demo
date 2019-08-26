@@ -9,9 +9,7 @@ import { addVisitiedViews, removeVisitiedViews } from '@/store/action'
 class TagsView extends React.Component {
   constructor(props) {
     super(props)
-    this.state = {
-      currentActiveTag: ''
-    }
+    this.state = {}
     this.scrollRef = React.createRef()
 
     this.tagList = []
@@ -25,43 +23,31 @@ class TagsView extends React.Component {
 
   componentDidMount() {
     this.initTags()
-    this.initActiveTag()
-    // this.setTagToRightPos() todo 异步方案到底咋办
   }
 
   componentWillReceiveProps() {
     // 这个生命周期，类似于computed,在props变化的时候派生出状态给state。或者类似于watch,在props变化的时候，做点什么
     this.initTags()
-    this.initActiveTag()
-    // this.setTagToRightPos()
   }
 
   componentDidUpdate() {
-    // this.setTagToRightPos()
+    setTimeout(() => {
+      // 在更新完dom之后再进行滚动操作 todo 是否可以放进setstate中利用setstate的“异步”特性
+      this.setTagToRightPos()
+    })
   }
 
   initTags = () => {
     // todo 这里的异步方案到底咋办
     const { addVisitiedViews } = this.props
     const { pathname } = this.props.history.location
-    console.log('this.scrollRef: ', this.scrollRef.current);
-    console.log('this.tagList: ', this.tagList);
-    console.log('pathname: ', pathname);
     const tagName = this.findCurrentTagName(pathname)
-    console.log('tagName: ', tagName);
     if (tagName) {
       addVisitiedViews({
         routeName: tagName,
         path: pathname
       })
     }
-  }
-
-  initActiveTag = () => {
-    const { pathname } = this.props.history.location
-    this.setState({
-      currentActiveTag: pathname
-    })
   }
 
   setTagToRightPos = () => {
@@ -100,7 +86,6 @@ class TagsView extends React.Component {
   handleRemoveTag = (e, item) => {
     e.stopPropagation()
     const { removeVisitiedViews, visitiedViews } = this.props
-    const { currentActiveTag } = this.state
     removeVisitiedViews(item)
     if (visitiedViews.length === 2) {
       this.props.history.push('/Dashboard')
@@ -108,8 +93,7 @@ class TagsView extends React.Component {
     }
     for (let i = 0; i < visitiedViews.length; i++) {
       if (
-        visitiedViews[i].path === item.path &&
-        currentActiveTag === item.path
+        visitiedViews[i].path === item.path
       ) {
         if (i === visitiedViews.length - 1) {
           this.props.history.push(visitiedViews[i - 1].path)
@@ -176,7 +160,7 @@ class TagsView extends React.Component {
 
   render() {
     const { visitiedViews } = this.props
-    const { currentActiveTag } = this.state
+    const { pathname: currentActiveTag } = this.props.history.location
     return (
       <div
         ref={this.scrollRef}

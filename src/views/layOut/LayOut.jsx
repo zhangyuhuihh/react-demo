@@ -16,38 +16,27 @@ const { SubMenu } = Menu
 class MyLayOut extends React.Component {
   state = {
     collapsed: false,
-    selectedKeys: [],
-    openKeys: [],
-    menuList: []
+    menuList: [],
+    count: 0 // 用来刷新菜单
   }
+  cacheOpenKeys = []
 
   componentWillMount() {
-    // 这里不能用componentDidMount
-    this.initMenu()
-  }
-
-  componentWillReceiveProps() {
-    // 这个生命周期，类似于computed,在props变化的时候派生出状态给state。或者类似于watch,在props变化的时候，做点什么
     this.initMenu()
   }
 
   initMenu = () => {
-    // 这里是所谓的“派生”状态，即state 依赖 props 的情况该如何处理（但是这里也有小小的不同，这里的props其实是相当于一个初始的值，“init”的概念
-    // 类比vue的computed计算属性，派生状态的区别
-    const { pathname } = this.props.history.location
     const newMenuList = this.produceNewMenuList(RouteConfig)
-    const newOpenKeys = this.findopenKeys(newMenuList, pathname).concat(
-      this.state.openKeys
-    )
     this.setState({
-      selectedKeys: [pathname],
-      openKeys: newOpenKeys,
       menuList: newMenuList
     })
   }
 
   // 适用上述格式多层级菜单,这里由于迭代，算重了，所以返回结果去重
-  findopenKeys = (menuList, pathname) => {
+  finddefaultOpenKeys = (menuList, pathname) => {
+    if (this.state.collapsed) {
+      return []
+    }
     const saveMenuList = _.cloneDeep(menuList)
     let arr = []
     const itera = (menuList, pathname) => {
@@ -85,13 +74,22 @@ class MyLayOut extends React.Component {
   }
 
   render() {
+    const { pathname } = this.props.history.location
+    const { menuList } = this.state
+    const newdefaultOpenKeys = this.finddefaultOpenKeys(
+      menuList,
+      pathname
+    ).concat(this.cacheOpenKeys)
+    this.cacheOpenKeys = newdefaultOpenKeys
     return (
       <Layout className={'local_layout_container'}>
         <Sider trigger={null} collapsible collapsed={this.state.collapsed}>
           <div className="logo" />
           <Menu
-            selectedKeys={this.state.selectedKeys}
-            openKeys={this.state.openKeys}
+            key={pathname + this.state.count}
+            // 暂时没找到更优雅地方式，有点挫啊大哥
+            defaultSelectedKeys={[pathname]}
+            defaultOpenKeys={newdefaultOpenKeys}
             mode="inline"
             theme="dark"
             inlineCollapsed={this.state.collapsed}
@@ -174,18 +172,15 @@ class MyLayOut extends React.Component {
     })
   }
 
-  // menu的openKeys一旦定义，就变成了了完全受控组件，所有的东西都要自己通过更新react的state来更新所有状态
   handleSubMenuClick = ({ key }) => {
-    let newOpenKeys = []
-    const isHave = this.state.openKeys.includes(key)
+    let newdefaultOpenKeys = []
+    const isHave = this.cacheOpenKeys.includes(key)
     if (isHave) {
-      newOpenKeys = this.state.openKeys.filter(v => v !== key)
+      newdefaultOpenKeys = this.cacheOpenKeys.filter(v => v !== key)
     } else {
-      newOpenKeys = [...this.state.openKeys, key]
+      newdefaultOpenKeys = [...this.cacheOpenKeys, key]
     }
-    this.setState({
-      openKeys: newOpenKeys
-    })
+    this.cacheOpenKeys = newdefaultOpenKeys
   }
 
   hasPermission(v) {
@@ -195,8 +190,12 @@ class MyLayOut extends React.Component {
   // https://www.jianshu.com/p/77e48c129c16
 
   toggle = () => {
+    if (!this.state.collapsed) {
+      this.cacheOpenKeys = []
+    }
     this.setState({
-      collapsed: !this.state.collapsed
+      collapsed: !this.state.collapsed,
+      count: this.state.count + 1
     })
   }
 }
