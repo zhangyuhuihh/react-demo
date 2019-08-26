@@ -192,6 +192,7 @@ class MyLayOut extends React.Component {
   toggle = () => {
     if (!this.state.collapsed) {
       this.cacheOpenKeys = []
+      this.handleSubMenuClick = () => {} // 牛皮，骚操作，清空函数
     }
     this.setState({
       collapsed: !this.state.collapsed,
