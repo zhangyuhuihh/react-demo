@@ -12,89 +12,94 @@ import _ from 'lodash'
 const { Header, Sider, Content } = Layout
 const { SubMenu } = Menu
 
-// @connect(mapStateToProps, mapDispatchToProps) es6:Decorator
-class MyLayOut extends React.Component {
-  state = {
-    collapsed: false,
-    menuList: [],
-    count: 0 // 用来刷新菜单
-  }
-  cacheOpenKeys = []
-
-  componentWillMount() {
-    this.initMenu()
-  }
-
-  initMenu = () => {
-    const newMenuList = this.produceNewMenuList(RouteConfig)
-    this.setState({
-      menuList: newMenuList
-    })
-  }
-
-  // 适用上述格式多层级菜单,这里由于迭代，算重了，所以返回结果去重
-  finddefaultOpenKeys = (menuList, pathname) => {
-    if (this.state.collapsed) {
-      return []
-    }
-    const saveMenuList = _.cloneDeep(menuList)
-    let arr = []
-    const itera = (menuList, pathname) => {
-      for (let i in menuList) {
-        if (menuList[i].hasOwnProperty('children')) {
-          for (let k in menuList[i].children) {
-            if (menuList[i].children[k].path === pathname) {
-              arr.unshift(menuList[i].path)
-              // 关键迭代
-              itera(saveMenuList, menuList[i].path)
-            } else {
-              itera(menuList[i].children, pathname)
-            }
+// 适用上述格式多层级菜单,这里由于迭代，算重了，所以返回结果去重
+function finddefaultOpenKeys(menuList, pathname) {
+  const saveMenuList = _.cloneDeep(menuList)
+  let arr = []
+  const itera = (menuList, pathname) => {
+    for (let i in menuList) {
+      if (menuList[i].hasOwnProperty('children')) {
+        for (let k in menuList[i].children) {
+          if (menuList[i].children[k].path === pathname) {
+            arr.unshift(menuList[i].path)
+            // 关键迭代
+            itera(saveMenuList, menuList[i].path)
+          } else {
+            itera(menuList[i].children, pathname)
           }
         }
       }
     }
-    itera(menuList, pathname)
-    return _.uniq(arr)
+  }
+  itera(menuList, pathname)
+  return _.uniq(arr)
+}
+
+function produceNewMenuList(RouteConfig) {
+  let arr = []
+  for (let i in RouteConfig) {
+    if (RouteConfig[i].hasOwnProperty('children')) {
+      arr[i] = {
+        ..._.omit(RouteConfig[i], ['component']),
+        children: produceNewMenuList(RouteConfig[i].children)
+      }
+    } else {
+      arr[i] = _.omit(RouteConfig[i], ['component'])
+    }
+  }
+  return arr
+}
+
+const menuList = produceNewMenuList(RouteConfig)
+
+// @connect(mapStateToProps, mapDispatchToProps) es6:Decorator
+class MyLayOut extends React.Component {
+  constructor(props) {
+    super(props)
+    const { pathname } = this.props.history.location
+    const ownDefaultOpenKeys = finddefaultOpenKeys(menuList, pathname)
+
+    this.menuList = menuList
+    this.state = {
+      collapsed: false,
+      menuList: menuList,
+      ownDefaultOpenKeys: ownDefaultOpenKeys,
+      ownDefaultSelectedKeys: [pathname],
+      cacheOpenKeys: ownDefaultOpenKeys
+    }
   }
 
-  produceNewMenuList = RouteConfig => {
-    let arr = []
-    for (let i in RouteConfig) {
-      if (RouteConfig[i].hasOwnProperty('children')) {
-        arr[i] = {
-          ..._.omit(RouteConfig[i], ['component']),
-          children: this.produceNewMenuList(RouteConfig[i].children)
-        }
-      } else {
-        arr[i] = _.omit(RouteConfig[i], ['component'])
+  static getDerivedStateFromProps(nextProps, prevState) {
+    const { pathname } = nextProps.history.location
+    const { cacheOpenKeys } = prevState
+    if (pathname !== prevState.ownDefaultSelectedKeys[0]) {
+      return {
+        ownDefaultSelectedKeys: [pathname],
+        ownDefaultOpenKeys: _.uniq(
+          finddefaultOpenKeys(menuList, pathname).concat(cacheOpenKeys)
+        )
       }
     }
-    return arr
+    return null
   }
 
   render() {
-    const { pathname } = this.props.history.location
-    const { menuList } = this.state
-    const newdefaultOpenKeys = this.finddefaultOpenKeys(
-      menuList,
-      pathname
-    ).concat(this.cacheOpenKeys)
-    this.cacheOpenKeys = newdefaultOpenKeys
+    const { menuList, ownDefaultOpenKeys, ownDefaultSelectedKeys } = this.state
     return (
       <Layout className={'local_layout_container'}>
         <Sider trigger={null} collapsible collapsed={this.state.collapsed}>
           <div className="logo" />
           <Menu
-            key={pathname + this.state.count}
+            key={ownDefaultSelectedKeys}
             // 暂时没找到更优雅地方式，有点挫啊大哥
-            defaultSelectedKeys={[pathname]}
-            defaultOpenKeys={newdefaultOpenKeys}
+            // 用唯一的key，用于在改变这些所谓的'default'值后页面可以重新渲染
+            defaultSelectedKeys={ownDefaultSelectedKeys}
+            defaultOpenKeys={ownDefaultOpenKeys}
             mode="inline"
             theme="dark"
             inlineCollapsed={this.state.collapsed}
           >
-            {this.iterateMenu(this.state.menuList)}
+            {this.iterateMenu(menuList)}
           </Menu>
         </Sider>
         <Layout>
@@ -174,13 +179,16 @@ class MyLayOut extends React.Component {
 
   handleSubMenuClick = ({ key }) => {
     let newdefaultOpenKeys = []
-    const isHave = this.cacheOpenKeys.includes(key)
+    const { cacheOpenKeys } = this.state
+    const isHave = cacheOpenKeys.includes(key)
     if (isHave) {
-      newdefaultOpenKeys = this.cacheOpenKeys.filter(v => v !== key)
+      newdefaultOpenKeys = cacheOpenKeys.filter(v => v !== key)
     } else {
-      newdefaultOpenKeys = [...this.cacheOpenKeys, key]
+      newdefaultOpenKeys = [...cacheOpenKeys, key]
     }
-    this.cacheOpenKeys = newdefaultOpenKeys
+    this.setState({
+      cacheOpenKeys: newdefaultOpenKeys
+    })
   }
 
   hasPermission(v) {
@@ -191,12 +199,12 @@ class MyLayOut extends React.Component {
 
   toggle = () => {
     if (!this.state.collapsed) {
-      this.cacheOpenKeys = []
-      this.handleSubMenuClick = () => {} // 牛皮，骚操作，清空函数
+      this.setState({
+        cacheOpenKeys: []
+      })
     }
     this.setState({
-      collapsed: !this.state.collapsed,
-      count: this.state.count + 1
+      collapsed: !this.state.collapsed
     })
   }
 }
