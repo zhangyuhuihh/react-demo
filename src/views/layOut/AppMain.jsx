@@ -3,12 +3,14 @@ import { Route, Switch, Redirect } from 'react-router-dom'
 
 import { connect } from 'react-redux'
 import { RouteConfig } from '@/route'
+import { HasPermissionContext } from '@/assets/contexts/HasPermissionContext'
 
 class AppMain extends React.Component {
+  static contextType = HasPermissionContext
   render() {
     return (
       <Switch>
-        <Redirect exact from="/" to="/Login" />
+        <Redirect exact from="/" to="/Dashboard" />
         {/* Redirect不能放在 Suspense里面*/}
         {this.produceRoute(RouteConfig).redirectArr}
         <Suspense fallback={<div>Loading...</div>}>
@@ -23,7 +25,7 @@ class AppMain extends React.Component {
     let redirectArr = []
     const itera = routeList => {
       for (let i = 0; i < routeList.length; i++) {
-        if (this.hasPermission(routeList[i])) {
+        if (this.context(routeList[i].role)) {
           if (routeList[i].hasOwnProperty('component')) {
             routeArr.push(
               <Route
@@ -54,10 +56,6 @@ class AppMain extends React.Component {
       routeArr,
       redirectArr
     }
-  }
-
-  hasPermission(v) {
-    return this.props.authArr.includes(v.role)
   }
 }
 
