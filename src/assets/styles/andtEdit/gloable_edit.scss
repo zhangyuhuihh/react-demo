@@ -1,0 +1,10 @@
+.ant-table-header {
+  scrollbar-color: transparent transparent;
+}
+.ant-table-header::-webkit-scrollbar {
+  background-color: transparent;
+}
+
+.ant-table-body {
+  overflow-y: auto!important
+}
