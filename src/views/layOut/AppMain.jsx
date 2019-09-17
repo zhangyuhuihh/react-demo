@@ -29,6 +29,7 @@ class AppMain extends React.Component {
           if (routeList[i].hasOwnProperty('component')) {
             routeArr.push(
               <Route
+                exact
                 path={routeList[i].path}
                 name={routeList[i].role}
                 component={routeList[i].component}
