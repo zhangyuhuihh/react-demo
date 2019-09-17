@@ -1,9 +1,11 @@
 import { combineReducers } from 'redux'
 
+const routeWhiteList = ['首页']
+
 const authReducer = (state = [], action) => {
   switch (action.type) {
     case 'SET_AUTHARR':
-      return action.authArr
+      return routeWhiteList.concat(action.authArr)
     default:
       return state
   }
@@ -20,10 +22,11 @@ const visitedViewsReducer = (
 ) => {
   switch (action.type) {
     case 'ADD_VISITIEDVIEWS':
-      const isHave = state.some(v => v.path === action.visitedObj.path)
-      if (!isHave) {
+      const isHave = state.find(v => v.path === action.visitedObj.path)
+      if (isHave === undefined) {
         return state.concat(action.visitedObj)
       } else {
+        isHave.state = action.visitedObj.state
         return state
       }
     // return state.concat(action.visitedObj)

@@ -40,12 +40,13 @@ class TagsView extends React.Component {
   initTags = () => {
     // todo 这里的异步方案到底咋办
     const { addVisitiedViews } = this.props
-    const { pathname } = this.props.history.location
+    const { pathname, state } = this.props.history.location
     const tagName = this.findCurrentTagName(pathname)
     if (tagName) {
       addVisitiedViews({
         routeName: tagName,
-        path: pathname
+        path: pathname,
+        state: state
       })
     }
   }
@@ -80,7 +81,7 @@ class TagsView extends React.Component {
   }
 
   handleChangeTag = item => {
-    this.props.history.push(item.path)
+    this.props.history.push({ pathname: item.path, state: item.state })
   }
 
   handleRemoveTag = (e, item) => {
@@ -92,13 +93,17 @@ class TagsView extends React.Component {
       return
     }
     for (let i = 0; i < visitiedViews.length; i++) {
-      if (
-        visitiedViews[i].path === item.path
-      ) {
+      if (visitiedViews[i].path === item.path) {
         if (i === visitiedViews.length - 1) {
-          this.props.history.push(visitiedViews[i - 1].path)
+          this.props.history.push({
+            pathname: visitiedViews[i - 1].path,
+            state: visitiedViews[i - 1].state
+          })
         } else {
-          this.props.history.push(visitiedViews[i + 1].path)
+          this.props.history.push({
+            pathname: visitiedViews[i + 1].path,
+            state: visitiedViews[i + 1].state
+          })
         }
       }
     }

@@ -8,6 +8,7 @@ import { lazy } from 'react'
  * icon: 图标
  * redirect: 决定此路由是否是大菜单，以跳转到对应的子路由
  * children: 大菜单，子路由
+ * hidden: 是否隐藏(true隐藏，默认打开)
  */
 
 
@@ -73,5 +74,5 @@ export const RouteConfig = [
     component: lazy(() => import('../views/expressDemo')),
     role: 'express测试',
     icon: 'menu'
-  },
+  }
 ]

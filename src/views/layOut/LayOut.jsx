@@ -8,6 +8,9 @@ import { Link, withRouter } from 'react-router-dom'
 import { connect } from 'react-redux'
 import { addVisitiedViews } from '@/store/action'
 import _ from 'lodash'
+import TopRightDrop from './TopRightDrop'
+
+import { HasPermissionContext } from '@/assets/contexts/HasPermissionContext'
 
 const { Header, Sider, Content } = Layout
 const { SubMenu } = Menu
@@ -54,6 +57,7 @@ const menuList = produceNewMenuList(RouteConfig)
 
 // @connect(mapStateToProps, mapDispatchToProps) es6:Decorator
 class MyLayOut extends React.Component {
+  static contextType = HasPermissionContext
   constructor(props) {
     super(props)
     const { pathname } = this.props.history.location
@@ -87,20 +91,36 @@ class MyLayOut extends React.Component {
     const { menuList, ownDefaultOpenKeys, ownDefaultSelectedKeys } = this.state
     return (
       <Layout className={'local_layout_container'}>
-        <Sider trigger={null} collapsible collapsed={this.state.collapsed}>
+        <Sider
+          style={{
+            overflowX: 'hidden'
+          }}
+          trigger={null}
+          collapsible
+          collapsed={this.state.collapsed}
+        >
           <div className="logo" />
-          <Menu
-            key={ownDefaultSelectedKeys}
-            // 暂时没找到更优雅地方式，有点挫啊大哥
-            // 用唯一的key，用于在改变这些所谓的'default'值后页面可以重新渲染
-            defaultSelectedKeys={ownDefaultSelectedKeys}
-            defaultOpenKeys={ownDefaultOpenKeys}
-            mode="inline"
-            theme="dark"
-            inlineCollapsed={this.state.collapsed}
+          <div
+            style={{
+              width: '217px',
+              overflowY: 'scroll',
+              height: 'calc(100vh - 64px)',
+              marginRight: '-17px'
+            }}
           >
-            {this.iterateMenu(menuList)}
-          </Menu>
+            <Menu
+              key={ownDefaultSelectedKeys}
+              // 暂时没找到更优雅地方式，有点挫啊大哥
+              // 用唯一的key，用于在改变这些所谓的'default'值后页面可以重新渲染
+              defaultSelectedKeys={ownDefaultSelectedKeys}
+              defaultOpenKeys={ownDefaultOpenKeys}
+              mode="inline"
+              theme="dark"
+              inlineCollapsed={this.state.collapsed}
+            >
+              {this.iterateMenu(menuList)}
+            </Menu>
+          </div>
         </Sider>
         <Layout>
           <Header style={{ background: '#fff', padding: 0 }}>
@@ -110,6 +130,9 @@ class MyLayOut extends React.Component {
               onClick={this.toggle}
             />
             <MyBreadcrumb />
+            <div style={{ float: 'right', marginRight: '20px' }}>
+              <TopRightDrop></TopRightDrop>
+            </div>
           </Header>
           <TagsView />
           <Content
@@ -135,7 +158,7 @@ class MyLayOut extends React.Component {
   iterateMenu(menuList) {
     let target = []
     for (let i in menuList) {
-      if (this.hasPermission(menuList[i])) {
+      if (this.context(menuList[i].role) && !menuList[i].hidden) {
         if (menuList[i].hasOwnProperty('children')) {
           target[i] = (
             <SubMenu
@@ -190,11 +213,6 @@ class MyLayOut extends React.Component {
       cacheOpenKeys: newdefaultOpenKeys
     })
   }
-
-  hasPermission(v) {
-    return this.props.authArr.includes(v.role)
-  }
-
   // https://www.jianshu.com/p/77e48c129c16
 
   toggle = () => {
@@ -209,19 +227,13 @@ class MyLayOut extends React.Component {
   }
 }
 
-const mapStateToProps = state => {
-  return {
-    authArr: state.authArr
-  }
-}
-
 const mapDispatchToProps = {
   addVisitiedViews
 }
 
 export default withRouter(
   connect(
-    mapStateToProps,
+    null,
     mapDispatchToProps
   )(MyLayOut)
 )
