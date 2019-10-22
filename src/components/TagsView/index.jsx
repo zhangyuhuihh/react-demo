@@ -26,11 +26,14 @@ class TagsView extends React.Component {
   }
 
   componentWillReceiveProps() {
-    // 这个生命周期，类似于computed,在props变化的时候派生出状态给state。或者类似于watch,在props变化的时候，做点什么
-    this.initTags()
+    // 这个生命周期，类似于computed,在props变化的时候派生出状态给state。或者类似于watch,在props变化的时候，做点什么 xxxxxxx之前的是错误的
+    // 并不是在props变化的时候会执行，只要是父级重新渲染，这里就会重新执行
+    // this.initTags()
+    console.log('this.props.history.location: ', this.props.history.location);
   }
 
   componentDidUpdate() {
+    this.initTags()
     setTimeout(() => {
       // 在更新完dom之后再进行滚动操作 todo 是否可以放进setstate中利用setstate的“异步”特性
       this.setTagToRightPos()
