@@ -7,16 +7,31 @@ import { HasPermissionContext } from '@/assets/contexts/HasPermissionContext'
 
 class AppMain extends React.Component {
   static contextType = HasPermissionContext
+  constructor(props) {
+    super(props)
+    this.state = {
+      redirectArr: [],
+      routeArr: []
+    }
+  }
+
+  componentWillMount() {
+    const { redirectArr, routeArr } = this.produceRoute(RouteConfig)
+    this.setState({
+      redirectArr: redirectArr,
+      routeArr: routeArr
+    })
+  }
+
   render() {
+    const { redirectArr, routeArr } = this.state
     return (
-      <Switch>
-        <Redirect exact from="/" to="/Dashboard" />
-        {/* Redirect不能放在 Suspense里面*/}
-        {this.produceRoute(RouteConfig).redirectArr}
-        <Suspense fallback={<div>Loading...</div>}>
-          {this.produceRoute(RouteConfig).routeArr}
-        </Suspense>
-      </Switch>
+      <Suspense fallback={<div>Loading...</div>}>
+        <Switch>
+          {routeArr}
+          {redirectArr}
+        </Switch>
+      </Suspense>
     )
   }
 
