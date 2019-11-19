@@ -11,6 +11,8 @@ import store from './store'
 
 import * as serviceWorker from './serviceWorker'
 
+import './icons'
+
 ReactDOM.render(
   <LocaleProvider locale={zh_CN}>
     <Provider store={store}>
