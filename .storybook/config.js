@@ -5,7 +5,9 @@ import 'antd/dist/antd.less' // less版本
 // require('!style-loader!css-loader!antd/dist/antd.less')
 
 function loadStories() {
-  require('../src/stories/test/index.js')
+  require('../src/stories/test/index.js'),
+  require('../src/stories/cascderTest/index.js')
+  require('../src/stories/upDown/index.js')
 }
 
 configure(loadStories, module)
