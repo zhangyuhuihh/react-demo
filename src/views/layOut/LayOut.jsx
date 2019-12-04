@@ -1,94 +1,75 @@
 import React from 'react'
-import { Layout, Menu, Icon } from 'antd'
+import { Layout, Icon } from 'antd'
 import MyBreadcrumb from './MyBreadcrumb'
 import AppMain from './AppMain'
 import { RouteConfig } from '@/route'
 import TagsView from '@/components/TagsView'
-import { Link, withRouter } from 'react-router-dom'
+import { withRouter } from 'react-router-dom'
 import { connect } from 'react-redux'
 import { addVisitiedViews } from '@/store/action'
-import _ from 'lodash'
+// import _ from 'lodash'
 import TopRightDrop from './TopRightDrop'
+import SideMenu from './SideMenu'
 
 import { HasPermissionContext } from '@/assets/contexts/HasPermissionContext'
 
 const { Header, Sider, Content } = Layout
-const { SubMenu } = Menu
-
-// 适用上述格式多层级菜单,这里由于迭代，算重了，所以返回结果去重
-function finddefaultOpenKeys(menuList, pathname) {
-  const saveMenuList = _.cloneDeep(menuList)
-  let arr = []
-  const itera = (menuList, pathname) => {
-    for (let i in menuList) {
-      if (menuList[i].hasOwnProperty('children')) {
-        for (let k in menuList[i].children) {
-          if (menuList[i].children[k].path === pathname) {
-            arr.unshift(menuList[i].path)
-            // 关键迭代
-            itera(saveMenuList, menuList[i].path)
-          } else {
-            itera(menuList[i].children, pathname)
-          }
-        }
-      }
-    }
-  }
-  itera(menuList, pathname)
-  return _.uniq(arr)
-}
-
-function produceNewMenuList(RouteConfig) {
-  let arr = []
-  for (let i in RouteConfig) {
-    if (RouteConfig[i].hasOwnProperty('children')) {
-      arr[i] = {
-        ..._.omit(RouteConfig[i], ['component']),
-        children: produceNewMenuList(RouteConfig[i].children)
-      }
-    } else {
-      arr[i] = _.omit(RouteConfig[i], ['component'])
-    }
-  }
-  return arr
-}
-
-const menuList = produceNewMenuList(RouteConfig)
 
 // @connect(mapStateToProps, mapDispatchToProps) es6:Decorator
 class MyLayOut extends React.Component {
   static contextType = HasPermissionContext
   constructor(props) {
     super(props)
-    const { pathname } = this.props.history.location
-    const ownDefaultOpenKeys = finddefaultOpenKeys(menuList, pathname)
-
-    this.menuList = menuList
     this.state = {
-      collapsed: false,
-      menuList: menuList,
-      ownDefaultOpenKeys: ownDefaultOpenKeys,
-      ownDefaultSelectedKeys: [pathname],
-      cacheOpenKeys: ownDefaultOpenKeys
+      collapsed: false
     }
   }
 
-  static getDerivedStateFromProps(nextProps, prevState) {
-    const { pathname } = nextProps.history.location
-    const { cacheOpenKeys } = prevState
-    if (pathname !== prevState.ownDefaultSelectedKeys[0]) {
-      return {
-        ownDefaultSelectedKeys: [pathname],
-        ownDefaultOpenKeys: _.uniq(
-          finddefaultOpenKeys(menuList, pathname).concat(cacheOpenKeys)
-        )
+  componentDidMount() {
+    const { addVisitiedViews } = this.props
+    const { pathname, state } = this.props.history.location
+    console.log('pathname: ', pathname);
+    const tagName = this.findCurrentTagName(pathname)
+    addVisitiedViews({
+      routeName: tagName,
+      path: pathname,
+      state: state
+    })
+  }
+
+  componentDidUpdate(preProps) {
+    const { addVisitiedViews } = this.props
+    const { pathname, state } = this.props.history.location
+    const tagName = this.findCurrentTagName(pathname)
+    addVisitiedViews({ // 这种情况必须非常小心
+      routeName: tagName,
+      path: pathname,
+      state: state
+    })
+  }
+
+  findCurrentTagName(pathname) {
+    let currentName = ''
+    const itera = list => {
+      for (let i = 0; i < list.length; i++) {
+        const element = list[i]
+        if (element.path !== pathname) {
+          if (element.hasOwnProperty('children')) {
+            itera(element.children)
+          }
+        } else {
+          if (element.hasOwnProperty('component')) {
+            // 避免添加二级菜单到TagsView上
+            currentName = element.name
+          }
+        }
       }
     }
-    return null
+    itera(RouteConfig)
+    return currentName
   }
 
   render() {
-    const { menuList, ownDefaultOpenKeys, ownDefaultSelectedKeys } = this.state
     return (
       <Layout className={'local_layout_container'}>
         <Sider
@@ -99,33 +80,12 @@ class MyLayOut extends React.Component {
           collapsible
           collapsed={this.state.collapsed}
         >
-          <div className="logo" />
-          <div
-            style={{
-              width: '217px',
-              overflowY: 'scroll',
-              height: 'calc(100vh - 64px)',
-              marginRight: '-17px'
-            }}
-          >
-            <Menu
-              key={ownDefaultSelectedKeys}
-              // 暂时没找到更优雅地方式，有点挫啊大哥
-              // 用唯一的key，用于在改变这些所谓的'default'值后页面可以重新渲染
-              defaultSelectedKeys={ownDefaultSelectedKeys}
-              defaultOpenKeys={ownDefaultOpenKeys}
-              mode="inline"
-              theme="dark"
-              inlineCollapsed={this.state.collapsed}
-            >
-              {this.iterateMenu(menuList)}
-            </Menu>
-          </div>
+          <SideMenu></SideMenu>
         </Sider>
         <Layout>
           <Header style={{ background: '#fff', padding: 0 }}>
             <Icon
-              className="trigger"
+              className='trigger'
               type={this.state.collapsed ? 'menu-unfold' : 'menu-fold'}
               onClick={this.toggle}
             />
@@ -150,71 +110,6 @@ class MyLayOut extends React.Component {
     )
   }
 
-  renderMenu() {
-    return this.iterateMenu(this.state.menuList)
-  }
-
-  // 适用上述格式多层级菜单
-  iterateMenu(menuList) {
-    let target = []
-    for (let i in menuList) {
-      if (this.context(menuList[i].role) && !menuList[i].hidden) {
-        if (menuList[i].hasOwnProperty('children')) {
-          target[i] = (
-            <SubMenu
-              key={menuList[i].path}
-              title={
-                <span>
-                  {menuList[i].icon ? <Icon type={menuList[i].icon} /> : null}
-                  <span>{menuList[i].name}</span>
-                </span>
-              }
-              onTitleClick={this.handleSubMenuClick}
-            >
-              {this.iterateMenu(menuList[i].children)}
-            </SubMenu>
-          )
-        } else {
-          target[i] = (
-            <Menu.Item
-              key={menuList[i].path}
-              onClick={v => this.handleChangeMenu(v, menuList[i])}
-            >
-              <Link to={menuList[i].path}>
-                {menuList[i].icon ? <Icon type={menuList[i].icon} /> : null}
-                <span>{menuList[i].name}</span>
-              </Link>
-            </Menu.Item>
-          )
-        }
-      }
-    }
-    return target
-  }
-
-  handleChangeMenu = (params, menu) => {
-    const { addVisitiedViews } = this.props
-    addVisitiedViews({
-      routeName: menu.name,
-      path: menu.path
-    })
-  }
-
-  handleSubMenuClick = ({ key }) => {
-    let newdefaultOpenKeys = []
-    const { cacheOpenKeys } = this.state
-    const isHave = cacheOpenKeys.includes(key)
-    if (isHave) {
-      newdefaultOpenKeys = cacheOpenKeys.filter(v => v !== key)
-    } else {
-      newdefaultOpenKeys = [...cacheOpenKeys, key]
-    }
-    this.setState({
-      cacheOpenKeys: newdefaultOpenKeys
-    })
-  }
-  // https://www.jianshu.com/p/77e48c129c16
-
   toggle = () => {
     if (!this.state.collapsed) {
       this.setState({
@@ -231,9 +126,4 @@ const mapDispatchToProps = {
   addVisitiedViews
 }
 
-export default withRouter(
-  connect(
-    null,
-    mapDispatchToProps
-  )(MyLayOut)
-)
+export default withRouter(connect(null, mapDispatchToProps)(MyLayOut))

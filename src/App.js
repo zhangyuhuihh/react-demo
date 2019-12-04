@@ -13,7 +13,7 @@ import {
 // import Login from '@/views/login/Login.jsx'
 
 // import { chooseSystem } from '@/assets/api/getAuth'
-import Login from '@/views/heatLogin'
+// import Login from '@/views/heatLogin'
 import { connect } from 'react-redux'
 import { setAuthArr } from './store/action'
 import { HasPermissionContext } from '@/assets/contexts/HasPermissionContext'
@@ -46,8 +46,8 @@ class App extends React.Component {
       <HasPermissionContext.Provider value={this.hasPermission}>
         <Router basename="/floorheat_web">
           <Switch>
-            <Route exact path="/login" component={Login} />
-            <Redirect exact from="/" to="/login" />
+            {/* <Route exact path="/login" component={Login} /> */}
+            <Redirect exact from="/" to="/Dashboard" />
             <MyLayOut></MyLayOut>
           </Switch>
         </Router>
