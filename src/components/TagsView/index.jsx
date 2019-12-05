@@ -4,7 +4,7 @@ import { RouteConfig } from '@/route'
 import { withRouter } from 'react-router-dom'
 import { connect } from 'react-redux'
 import moduleCss from './tagsView.module.scss'
-import { addVisitiedViews, removeVisitiedViews } from '@/store/action'
+import { removeVisitiedViews } from '@/store/action'
 
 class TagsView extends React.Component {
   constructor(props) {
@@ -21,45 +21,16 @@ class TagsView extends React.Component {
     }
   }
 
-  componentDidMount() {
-    this.initTags()
-  }
-
-  componentWillReceiveProps() {
-    // 这个生命周期，类似于computed,在props变化的时候派生出状态给state。或者类似于watch,在props变化的时候，做点什么 xxxxxxx之前的是错误的
-    // 并不是在props变化的时候会执行，只要是父级重新渲染，这里就会重新执行
-    // this.initTags()
-    console.log('this.props.history.location: ', this.props.history.location);
-  }
-
-  componentDidUpdate() {
-    this.initTags()
-    setTimeout(() => {
-      // 在更新完dom之后再进行滚动操作 todo 是否可以放进setstate中利用setstate的“异步”特性
+  componentDidUpdate(preProps) {
+    if (preProps.history.location.pathname !== this.props.history.location.pathname) {
       this.setTagToRightPos()
-    })
-  }
-
-  initTags = () => {
-    // todo 这里的异步方案到底咋办
-    const { addVisitiedViews } = this.props
-    const { pathname, state } = this.props.history.location
-    const tagName = this.findCurrentTagName(pathname)
-    if (tagName) {
-      addVisitiedViews({
-        routeName: tagName,
-        path: pathname,
-        state: state
-      })
     }
   }
 
   setTagToRightPos = () => {
     const { pathname } = this.props.history.location
     const tagName = this.findCurrentTagName(pathname)
-    if (tagName) {
-      this.moveToTarget(tagName)
-    }
+    this.moveToTarget(tagName)
   }
 
   findCurrentTagName(pathname) {
@@ -168,6 +139,7 @@ class TagsView extends React.Component {
 
   render() {
     const { visitiedViews } = this.props
+    console.log('visitiedViews: ', visitiedViews);
     const { pathname: currentActiveTag } = this.props.history.location
     return (
       <div
@@ -189,7 +161,7 @@ class TagsView extends React.Component {
                 <span style={{ marginLeft: '3px' }}>{item.routeName}</span>
                 {item.path === '/Dashboard' ? null : (
                   <Icon
-                    type="close"
+                    type='close'
                     onClick={e => this.handleRemoveTag(e, item)}
                     style={{ marginLeft: '3px', fontSize: '13px' }}
                   />
@@ -210,13 +182,9 @@ const mapStateToProps = state => {
 }
 
 const mapDispatchToProps = {
-  addVisitiedViews,
   removeVisitiedViews
 }
 
 export default withRouter(
-  connect(
-    mapStateToProps,
-    mapDispatchToProps
-  )(TagsView)
+  connect(mapStateToProps, mapDispatchToProps)(TagsView)
 )
