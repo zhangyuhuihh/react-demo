@@ -28,6 +28,7 @@ class AppMain extends React.Component {
     return (
       <Suspense fallback={<div>Loading...</div>}>
         <Switch>
+          <Redirect exact from="/" to="/Dashboard" />
           {routeArr}
           {redirectArr}
         </Switch>

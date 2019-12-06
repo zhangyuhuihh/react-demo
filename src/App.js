@@ -1,16 +1,9 @@
 import React from 'react'
-import MyLayOut from './views/layOut/LayOut'
 import './App.css'
 import './assets/styles/andtEdit/part_andt_edit.scss'
 // 这里的scss文件不能再css文件里面引入，必须在scss或者js文件里面引入
-import {
-  BrowserRouter as Router,
-  Route,
-  Switch,
-  Redirect
-} from 'react-router-dom'
-// import SinglePage from '@/views/test/SinglePage'
-// import Login from '@/views/login/Login.jsx'
+import HomePage from './views/HomePage'
+import { BrowserRouter as Router } from 'react-router-dom'
 
 // import { chooseSystem } from '@/assets/api/getAuth'
 // import Login from '@/views/heatLogin'
@@ -45,11 +38,7 @@ class App extends React.Component {
     return (
       <HasPermissionContext.Provider value={this.hasPermission}>
         <Router basename="/floorheat_web">
-          <Switch>
-            {/* <Route exact path="/login" component={Login} /> */}
-            <Redirect exact from="/" to="/Dashboard" />
-            <MyLayOut></MyLayOut>
-          </Switch>
+          <HomePage></HomePage>
         </Router>
       </HasPermissionContext.Provider>
     )
@@ -75,7 +64,4 @@ const mapStateToProps = state => {
   }
 }
 
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(App)
+export default connect(mapStateToProps, mapDispatchToProps)(App)
