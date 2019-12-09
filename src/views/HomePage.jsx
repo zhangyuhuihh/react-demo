@@ -57,6 +57,6 @@ class HomePage extends React.Component {
       )
     }
   }
-}
+} 
 
 export default withRouter(HomePage)

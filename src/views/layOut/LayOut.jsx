@@ -21,14 +21,15 @@ class MyLayOut extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
-      collapsed: false
+      collapsed: false,
+      changeCollapsed: 0
     }
   }
 
   componentDidMount() {
     const { addVisitiedViews } = this.props
     const { pathname, state } = this.props.history.location
-    console.log('pathname: ', pathname);
+    console.log('pathname: ', pathname)
     const tagName = this.findCurrentTagName(pathname)
     addVisitiedViews({
       routeName: tagName,
@@ -41,7 +42,8 @@ class MyLayOut extends React.Component {
     const { addVisitiedViews } = this.props
     const { pathname, state } = this.props.history.location
     const tagName = this.findCurrentTagName(pathname)
-    addVisitiedViews({ // 这种情况必须非常小心
+    addVisitiedViews({
+      // 这种情况必须非常小心
       routeName: tagName,
       path: pathname,
       state: state
@@ -69,23 +71,29 @@ class MyLayOut extends React.Component {
     return currentName
   }
 
+  toggle = () => {
+    let { changeCollapsed } = this.state
+    if (!this.state.collapsed) {
+      this.setState({
+        changeCollapsed: changeCollapsed++
+      })
+    }
+    this.setState({
+      collapsed: !this.state.collapsed
+    })
+  }
+
   render() {
     return (
       <Layout className={'local_layout_container'}>
-        <Sider
-          style={{
-            overflowX: 'hidden'
-          }}
-          trigger={null}
-          collapsible
+        <SideMenu
+          changeCollapsed={this.state.changeCollapsed}
           collapsed={this.state.collapsed}
-        >
-          <SideMenu></SideMenu>
-        </Sider>
+        ></SideMenu>
         <Layout>
           <Header style={{ background: '#fff', padding: 0 }}>
             <Icon
-              className='trigger'
+              className="trigger"
               type={this.state.collapsed ? 'menu-unfold' : 'menu-fold'}
               onClick={this.toggle}
             />
@@ -108,17 +116,6 @@ class MyLayOut extends React.Component {
         </Layout>
       </Layout>
     )
-  }
-
-  toggle = () => {
-    if (!this.state.collapsed) {
-      this.setState({
-        cacheOpenKeys: []
-      })
-    }
-    this.setState({
-      collapsed: !this.state.collapsed
-    })
   }
 }
 
