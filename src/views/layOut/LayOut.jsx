@@ -21,9 +21,9 @@ class MyLayOut extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
-      collapsed: false,
-      changeCollapsed: 0
+      collapsed: false
     }
+    this.keyForCollapesd = 0
   }
 
   componentDidMount() {
@@ -86,10 +86,16 @@ class MyLayOut extends React.Component {
   render() {
     return (
       <Layout className={'local_layout_container'}>
-        <SideMenu
-          changeCollapsed={this.state.changeCollapsed}
+        <Sider
+          style={{
+            overflowX: 'hidden'
+          }}
+          trigger={null}
+          collapsible
           collapsed={this.state.collapsed}
-        ></SideMenu>
+        >
+          <SideMenu keyForCollapesd={this.keyForCollapesd}></SideMenu>
+        </Sider>
         <Layout>
           <Header style={{ background: '#fff', padding: 0 }}>
             <Icon

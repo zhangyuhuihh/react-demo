@@ -1,5 +1,5 @@
 import React from 'react'
-import { Menu, Icon, Layout } from 'antd'
+import { Menu, Icon } from 'antd'
 import { RouteConfig } from '@/route'
 import { Link, withRouter } from 'react-router-dom'
 // import { connect } from 'react-redux'
@@ -8,7 +8,6 @@ import _ from 'lodash'
 import { HasPermissionContext } from '@/assets/contexts/HasPermissionContext'
 
 const { SubMenu } = Menu
-const { Sider } = Layout
 
 // 适用上述格式多层级菜单,这里由于迭代，算重了，所以返回结果去重
 function finddefaultOpenKeys(menuList, pathname) {
@@ -63,7 +62,7 @@ class SideMenu extends React.Component {
       ownDefaultOpenKeys: ownDefaultOpenKeys,
       ownDefaultSelectedKeys: [pathname],
       cacheOpenKeys: ownDefaultOpenKeys,
-      prePropsCollapsed: this.props.changeCollapsed
+      prePropsCollapsed: this.props.keyForCollapesd
     }
   }
 
@@ -78,52 +77,43 @@ class SideMenu extends React.Component {
         )
       }
     }
-    if (props.collapsed === false && props.changeCollapsed !== state.prePropsCollapsed) {
+    if (props.keyForCollapesd !== state.prePropsCollapsed) {
       return {
         cacheOpenKeys: [],
-        prePropsCollapsed: props.changeCollapsed
+        prePropsCollapsed: props.keyForCollapesd
       }
     }
     return null
   }
-  
+
   render() {
     const { menuList, ownDefaultOpenKeys, ownDefaultSelectedKeys } = this.state
     const { collapsed } = this.props
     return (
-      <Sider
-        style={{
-          overflowX: 'hidden'
-        }}
-        trigger={null}
-        collapsible
-        collapsed={collapsed}
-      >
-        <React.Fragment>
-          <div className="logo" />
-          <div
-            style={{
-              width: '217px',
-              overflowY: 'scroll',
-              height: 'calc(100vh - 64px)',
-              marginRight: '-17px'
-            }}
+      <React.Fragment>
+        <div className="logo" />
+        <div
+          style={{
+            width: '217px',
+            overflowY: 'scroll',
+            height: 'calc(100vh - 64px)',
+            marginRight: '-17px'
+          }}
+        >
+          <Menu
+            key={ownDefaultSelectedKeys}
+            // 暂时没找到更优雅地方式，有点挫啊大哥
+            // 用唯一的key，用于在改变这些所谓的'default'值后页面可以重新渲染
+            defaultSelectedKeys={ownDefaultSelectedKeys}
+            defaultOpenKeys={ownDefaultOpenKeys}
+            mode="inline"
+            theme="dark"
+            inlineCollapsed={collapsed}
           >
-            <Menu
-              key={ownDefaultSelectedKeys}
-              // 暂时没找到更优雅地方式，有点挫啊大哥
-              // 用唯一的key，用于在改变这些所谓的'default'值后页面可以重新渲染
-              defaultSelectedKeys={ownDefaultSelectedKeys}
-              defaultOpenKeys={ownDefaultOpenKeys}
-              mode="inline"
-              theme="dark"
-              inlineCollapsed={collapsed}
-            >
-              {this.iterateMenu(menuList)}
-            </Menu>
-          </div>
-        </React.Fragment>
-      </Sider>
+            {this.iterateMenu(menuList)}
+          </Menu>
+        </div>
+      </React.Fragment>
     )
   }
 
