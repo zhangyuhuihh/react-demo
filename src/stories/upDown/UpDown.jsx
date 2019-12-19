@@ -1,5 +1,5 @@
 import React from 'react'
-import { Icon } from 'antd-mobile'
+import { Icon } from 'antd'
 
 // 所有高度基于screenHeight和screenWidth
 class UpDown extends React.Component {
@@ -37,21 +37,39 @@ class UpDown extends React.Component {
           borderTopRightRadius: '20px',
           zIndex: '88'
         }}
+        onTouchStart={this.handleTouchStart}
+        onTouchMove={this.handleTouchMove}
+        onTouchEnd={this.handleTouchEnd}
       >
         <div
-          onTouchStart={this.handleTouchStart}
-          onTouchMove={this.handleTouchMove}
-          onTouchEnd={this.handleTouchEnd}
-          onTouchCancel={this.handleTouchCancel}
           style={{
+            position: 'relative',
             height: '30px',
-            width: '100%',
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center'
+            width: '100%'
           }}
         >
-          {this.renderIcons()}
+          <div
+            style={{
+              height: '30px',
+              width: '100%',
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center'
+            }}
+          ></div>
+          <div
+            style={{
+              position: 'absolute',
+              height: '22px',
+              width: '22px',
+              top: '50%',
+              left: '50%',
+              marginTop: '-11px',
+              marginLeft: '-11px'
+            }}
+          >
+            {this.renderIcons()}
+          </div>
         </div>
         <div>{this.props.children}</div>
       </div>
@@ -61,10 +79,32 @@ class UpDown extends React.Component {
   renderIcons() {
     const { upOrDown } = this.state
     return upOrDown === 'up' ? (
-      <Icon type="up" color={'#fff'}></Icon>
+      <Icon
+        type='up'
+        style={{ color: '#ffffff' }}
+        onClick={this.handleUpClick}
+      ></Icon>
     ) : (
-      <Icon type="down" color={'#fff'}></Icon>
+      <Icon
+        type='down'
+        style={{ color: '#ffffff' }}
+        onClick={this.handleDownClick}
+      ></Icon>
     )
+  }
+  handleUpClick = () => {
+    this.setState({
+      transitionStyle: 'transform 0.2s ease 0s',
+      topLen: this.boundryTop,
+      upOrDown: 'down'
+    })
+  }
+  handleDownClick = () => {
+    this.setState({
+      transitionStyle: 'transform 0.2s ease 0s',
+      topLen: 0,
+      upOrDown: 'up'
+    })
   }
 
   handleTouchStart = e => {
@@ -72,6 +112,7 @@ class UpDown extends React.Component {
     this.initTopLen = this.state.topLen
     this.setState({
       transitionStyle: 'none',
+      touchEndPos: 0,
       enableMove: true
     })
   }
@@ -96,7 +137,7 @@ class UpDown extends React.Component {
         upOrDown: 'down'
       })
     }
-    if (touchEndPos <= 0) {
+    if (touchEndPos < 0) {
       this.setState({
         transitionStyle: 'transform 0.2s ease 0s',
         topLen: 0,

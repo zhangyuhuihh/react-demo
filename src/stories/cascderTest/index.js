@@ -1,7 +1,7 @@
 import React from 'react'
 import { storiesOf } from '@storybook/react'
 import CascderTest from './CascderTest'
-import { getAppPosition } from '../../assets/api/apps/homePage'
+// import { getAppPosition } from '../../assets/api/apps/homePage'
 
 // https://blog.csdn.net/qq_38054239/article/details/86613231
 // https://www.codercto.com/a/40438.html
