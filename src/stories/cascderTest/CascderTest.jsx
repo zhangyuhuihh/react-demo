@@ -169,7 +169,7 @@ class CascderTest extends React.Component {
     }
   }
 
-  findCurrentObj(item) {
+  findCurrentObj(item) { 
     const { models, treeData } = this.props
     const mainKey = models.value
     let result

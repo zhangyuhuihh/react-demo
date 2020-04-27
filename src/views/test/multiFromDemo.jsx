@@ -30,63 +30,37 @@ const formItemLayoutWithOutLabel = {
 
 // tree的数据结构
 const treeData = [
-  // {
-  //   location: '1',
-  //   name: '第一层',
-  //   coreList: [{ location: '4', name: '第一层子一' }]
-  // },
   {
-    location: '2',
+    location: '1',
     name: '第一层',
-    coreList: [
-      {
-        location: '6',
-        name: '第一层子一'
-      }
-    ]
-  },
+    coreList: [{ location: '4', name: '第一层子一' }]
+  }
   // {
-  //   location: '3',
+  //   location: '2',
   //   name: '第一层',
   //   coreList: [
-  //     { location: '7', name: '第一层子一' },
-  //     { location: '8', name: '第一层子er' },
-  //     { location: '9', name: '第一层子san' }
+  //     {
+  //       location: '6',
+  //       name: '第一层子一'
+  //     }
   //   ]
   // }
 ]
+
+let id = 0
 
 class DynamicFieldSet extends React.Component {
   constructor() {
     super()
     this.state = {
-      muiltFormItems: treeData
+      muiltFormItems: treeData,
+      ids: 0
     }
   }
 
-  remove1 = index1 => {
+  remove1 = (index1) => {
     this.updateFirstMuiltFormItems(index1)
-    this.updateFirstFormDatas(index1)
-  }
-
-  updateFirstFormDatas(index1) {
-    const { form } = this.props
-    const currentFormData = form.getFieldsValue()
-    let newFormData =  currentFormData.locationAndCount.filter((v, i) => i !== index1)
-    let obj = {}
-    for (let i = 0; i < newFormData.length; i++) {
-      const element = newFormData[i]
-      obj[`locationAndCount.${i}.name`] = element.name
-      if (element.coreList) {
-        for (let k = 0; k < element.coreList.length; k++) {
-          const element2 = element.coreList[k]
-          obj[`locationAndCount.${i}.coreList.${k}.name`] = element2.name
-        }
-      }
-    }
-    form.setFieldsValue({
-      ...obj
-    })
+    // this.updateFirstFormDatas(index1)
   }
 
   updateFirstMuiltFormItems(index1) {
@@ -97,28 +71,62 @@ class DynamicFieldSet extends React.Component {
     })
   }
 
-  remove2 = (index1, index2) => {
-    this.updateSecondMuiltFormItems(index1, index2)
-    this.updateSecondFormDatas(index1, index2)
+  formateDataToFields(newFormData, initKey) {
+    let result = {}
+    let current = initKey
+    const itera = (obj) => {
+      for (let key in obj) {
+        const element = obj[key]
+        let current1 = current + `.${key}`
+        if (typeof element === 'object') {
+          for (let key2 in element) {
+            let current2 = current1 + `.${key2}`
+            if (typeof element[key2] === 'object') {
+              current = current2
+              itera(element[key2])
+            } else {
+              result[current2] = element[key2]
+              current = initKey
+            }
+          }
+        } else {
+          result[current] = element
+          current = initKey
+        }
+      }
+    }
+    itera(newFormData)
+    return result
   }
 
-  updateSecondFormDatas(index1, index2) {
+  updateFirstFormDatas(index1) {
     const { form } = this.props
     const currentFormData = form.getFieldsValue()
-    let newFormData = _.cloneDeep(currentFormData)
-    newFormData.locationAndCount[index1].coreList.splice(index2, 1)
-    let obj = {}
-    for (
-      let i = 0;
-      i < newFormData.locationAndCount[index1].coreList.length;
-      i++
-    ) {
-      obj[`locationAndCount.${index1}.coreList.${i}.name`] =
-        newFormData.locationAndCount[index1].coreList[i].name
-    }
-    form.setFieldsValue({
-      ...obj
-    })
+    let newFormData = currentFormData.locationAndCount.filter(
+      (v, i) => i !== index1
+    )
+    console.log('newFormData: ', newFormData);
+    // const allData = this.formateDataToFields(newFormData, 'locationAndCount')
+
+    // let obj = {}
+    // for (let i = 0; i < newFormData.length; i++) {
+    //   const element = newFormData[i]
+    //   obj[`locationAndCount.${i}.name`] = element.name
+    //   if (element.coreList) {
+    //     for (let k = 0; k < element.coreList.length; k++) {
+    //       const element2 = element.coreList[k]
+    //       obj[`locationAndCount.${i}.coreList.${k}.name`] = element2.name
+    //     }
+    //   }
+    // }
+
+    // form.setFieldsValue({
+    //   ...allData
+    // })
+  }
+
+  remove2 = (index1, index2) => {
+    this.updateSecondMuiltFormItems(index1, index2)
   }
 
   updateSecondMuiltFormItems(index1, index2) {
@@ -165,7 +173,7 @@ class DynamicFieldSet extends React.Component {
     })
   }
 
-  handleSubmit = e => {
+  handleSubmit = (e) => {
     e.preventDefault()
     this.props.form.validateFields((err, values) => {
       if (!err) {
@@ -173,7 +181,7 @@ class DynamicFieldSet extends React.Component {
         console.log('Received values of form: ', values)
         console.log(
           'Merged values:',
-          keys.map(key => names[key])
+          keys.map((key) => names[key])
         )
       }
     })
@@ -199,14 +207,14 @@ class DynamicFieldSet extends React.Component {
               ]
             })(
               <Input
-                placeholder="第一层输入框"
+                placeholder='第一层输入框'
                 style={{ width: '220px', marginRight: 8 }}
               />
             )}
             {muiltFormItems.length > 1 ? (
               <Icon
-                className="dynamic-delete-button"
-                type="minus-circle-o"
+                className='dynamic-delete-button'
+                type='minus-circle-o'
                 onClick={() => this.remove1(index1)}
               />
             ) : null}
@@ -228,8 +236,8 @@ class DynamicFieldSet extends React.Component {
     return (
       <div style={{ position: 'relative' }}>
         <div style={{ position: 'absolute', right: '60px', top: '5px' }}>
-          <Button type="dashed" onClick={() => this.add2(index1)}>
-            <Icon type="plus" />
+          <Button type='dashed' onClick={() => this.add2(index1)}>
+            <Icon type='plus' />
             添加
           </Button>
         </div>
@@ -257,12 +265,12 @@ class DynamicFieldSet extends React.Component {
                   }
                 )(
                   <Input
-                    placeholder="第二层输入框"
+                    placeholder='第二层输入框'
                     style={{ width: '203px', marginRight: 8 }}
                   />
                 )}
                 <Icon
-                  type="minus-circle-o"
+                  type='minus-circle-o'
                   onClick={() => this.remove2(index1, index2)}
                 />
               </Form.Item>
@@ -284,13 +292,13 @@ class DynamicFieldSet extends React.Component {
           {this.renderMuiltFormItemsFirst()}
           {/* {this.renderCommonFormItems()} */}
           <Form.Item {...formItemLayoutWithOutLabel}>
-            <Button type="dashed" onClick={this.add} style={{ width: '220px' }}>
-              <Icon type="plus" />
+            <Button type='dashed' onClick={this.add} style={{ width: '220px' }}>
+              <Icon type='plus' />
               添加第一级
             </Button>
           </Form.Item>
           <Form.Item {...formItemLayoutWithOutLabel}>
-            <Button type="primary" htmlType="submit">
+            <Button type='primary' htmlType='submit'>
               提交
             </Button>
           </Form.Item>
